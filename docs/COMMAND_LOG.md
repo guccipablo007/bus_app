@@ -401,3 +401,18 @@ Hosted smoke script syntax: passed
 Created deployment configuration and documentation only. No Render service was
 created, no public deployment occurred, no APK was built, and no secret value
 was written or printed.
+
+## 2026-06-21 - Render Corepack build fix
+
+The first Render Blueprint build failed because `corepack enable` attempted to
+unlink the read-only system path `/usr/bin/pnpm` and returned `EROFS`.
+
+Updated the Blueprint to use pinned, no-system-write commands:
+
+```text
+Build: npx -y pnpm@11.8.0 install --frozen-lockfile && npx -y pnpm@11.8.0 --filter api build
+Start: npx -y pnpm@11.8.0 --filter api start:prod
+```
+
+Local API build, unit tests, and typecheck were rerun before committing. No APK,
+Supabase schema, seed, or credential file was touched.

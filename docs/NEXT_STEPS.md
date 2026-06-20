@@ -16,10 +16,13 @@
 Manual configuration alternative:
 
 ```text
-Build: corepack enable && corepack prepare pnpm@11.8.0 --activate && pnpm install --frozen-lockfile && pnpm --filter api build
-Start: corepack pnpm --filter api start:prod
+Build: npx -y pnpm@11.8.0 install --frozen-lockfile && npx -y pnpm@11.8.0 --filter api build
+Start: npx -y pnpm@11.8.0 --filter api start:prod
 Health: /api/v1/health
 ```
+
+These commands avoid the Render Corepack `EROFS` failure caused by attempts to
+modify read-only `/usr/bin/pnpm`.
 
 ## Phase 9 gate
 

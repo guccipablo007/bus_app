@@ -14,6 +14,8 @@ Phase 8 - Hosted API deployment preparation complete; manual Render deployment p
 - Added safe hosted database health reporting.
 - Reverified all local and Supabase adapter tests.
 - Kept the single Flutter app architecture and performed no APK work.
+- Replaced Render Corepack commands with pinned `npx pnpm@11.8.0` commands after
+  Render rejected writes to read-only `/usr/bin/pnpm`.
 
 ## Files changed
 
@@ -51,12 +53,12 @@ cmd /c pnpm --filter api test:integration
 - Public HTTPS URL is not available yet.
 - Render Free cold starts may delay the first request after idle.
 - CORS `*` should be narrowed when a hosted browser dashboard exists.
+- The corrected Blueprint must be redeployed before hosted smoke testing.
 
 ## Exact next task
 
-The user must manually create and deploy the Render service using
-`docs/render_api_deployment_guide.md`, then run the hosted smoke script. Once it
-passes, start Phase 9 mobile API integration with the HTTPS base URL.
+Redeploy the corrected Blueprint commit, then run the hosted smoke script. Once
+it passes, start Phase 9 mobile API integration with the HTTPS base URL.
 
 ## Secrets still needed
 

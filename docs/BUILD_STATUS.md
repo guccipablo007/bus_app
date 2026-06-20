@@ -5,6 +5,10 @@
 Phase 8 hosted API deployment preparation is complete. No deployment or APK
 build was performed.
 
+The first Render build failed because Corepack attempted to modify read-only
+`/usr/bin/pnpm`. `render.yaml` now uses pinned `npx pnpm@11.8.0` commands that
+do not modify Render's system installation.
+
 ## Prepared
 
 - Root `render.yaml` for a Render Free Web Service with auto-deploy disabled.

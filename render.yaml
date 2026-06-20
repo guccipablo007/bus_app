@@ -5,8 +5,8 @@ services:
     plan: free
     rootDir: .
     autoDeploy: false
-    buildCommand: corepack enable && corepack prepare pnpm@11.8.0 --activate && pnpm install --frozen-lockfile && pnpm --filter api build
-    startCommand: corepack pnpm --filter api start:prod
+    buildCommand: npx -y pnpm@11.8.0 install --frozen-lockfile && npx -y pnpm@11.8.0 --filter api build
+    startCommand: npx -y pnpm@11.8.0 --filter api start:prod
     healthCheckPath: /api/v1/health
     envVars:
       - key: NODE_ENV
