@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: cameroon-bus-api-staging
+    runtime: node
+    plan: free
+    rootDir: .
+    autoDeploy: false
+    buildCommand: corepack enable && corepack prepare pnpm@11.8.0 --activate && pnpm install --frozen-lockfile && pnpm --filter api build
+    startCommand: corepack pnpm --filter api start:prod
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_ENV
+        value: staging
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: ID_ENCRYPTION_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: '*'
+      - key: SUPABASE_DATABASE_NOTE
+        value: Use Session Pooler connection string

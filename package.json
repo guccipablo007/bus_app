@@ -1,0 +1,20 @@
+{
+  "name": "cameroon-bus-platform",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.8.0",
+  "scripts": {
+    "dev:api": "pnpm --filter api start:dev",
+    "build:api": "pnpm --filter api build",
+    "test:api": "pnpm --filter api test",
+    "lint:api": "pnpm --filter api lint",
+    "db:validate:seeds": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/validate_seed_files.ps1",
+    "db:seed:staging": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run_supabase_seeds.ps1 -ConfirmStaging"
+  },
+  "dependencies": {
+    "pg": "^8.22.0"
+  },
+  "devDependencies": {
+    "bcryptjs": "^3.0.3"
+  }
+}
