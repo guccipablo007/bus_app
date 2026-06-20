@@ -2,65 +2,68 @@
 
 ## Current phase
 
-Phase 8 - Hosted API deployment preparation complete; manual Render deployment pending.
+Phases 9 and 10 complete: hosted mobile integration and debug staging APK.
 
 ## What was completed
 
-- Added a secret-free Render Free blueprint with auto-deploy disabled.
-- Documented exact repository-root build/start commands and environment variables.
-- Added a placeholder-only staging environment example.
-- Added hosted HTTPS smoke testing for four public API workflows.
-- Added explicit dynamic `PORT` and wildcard/list-based CORS handling.
-- Added safe hosted database health reporting.
-- Reverified all local and Supabase adapter tests.
-- Kept the single Flutter app architecture and performed no APK work.
-- Replaced Render Corepack commands with pinned `npx pnpm@11.8.0` commands after
-  Render rejected writes to read-only `/usr/bin/pnpm`.
+- Connected the single Flutter app to the hosted NestJS API through
+  `API_BASE_URL` and an `http`-based API client.
+- Implemented real register/login and backend-provided role routing, including
+  multi-role selection.
+- Implemented passenger health/location loading, Buea-to-Bamenda search,
+  booking, demo payment/ticket, taxi eligibility, and taxi request flows.
+- Added stable role dashboards for agency, dispatcher, driver, and super admin.
+- Kept the Material 3 glass-inspired visual system and one-app architecture.
+- Passed Flutter analysis/tests and NestJS build/tests/typecheck.
+- Built and verified the debug staging APK against the Render HTTPS API.
 
 ## Files changed
 
-- `render.yaml`
-- `services/api/.env.staging.example`
-- `scripts/smoke_test_hosted_api.ps1`
-- `.gitignore`
-- `services/api/src/main.ts`
-- `services/api/src/config/environment.ts`
-- `services/api/src/health/health.controller.ts`
-- `services/api/src/health/health.controller.spec.ts`
-- Phase 8 deployment, security, status, and handoff docs
+- `apps/mobile_app/lib/core/api/*`
+- `apps/mobile_app/lib/services/*`
+- Flutter auth, navigation, models, passenger flow, and role shells
+- Flutter dependency lockfiles and tests
+- `scripts/build_mobile_staging_apk.ps1`
+- Phase status, navigation, design, API, hosted smoke, and APK documentation
 
 ## Commands run
 
 ```powershell
+cd apps/mobile_app
+flutter pub get
+flutter analyze
+flutter test
+cd ../..
 cmd /c pnpm --filter api build
-cmd /c pnpm --filter api typecheck
 cmd /c pnpm --filter api test
-cmd /c pnpm --filter api test:e2e
-cmd /c pnpm --filter api test:integration
+cmd /c pnpm --filter api typecheck
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build_mobile_staging_apk.ps1 -ApiBaseUrl "https://cameroon-bus-api-staging.onrender.com/api/v1"
 ```
 
 ## Tests passed/failed
 
-- Build/typecheck: passed.
-- Unit: 30 passed.
-- E2E: 10 passed.
-- PostgreSQL integration: 2 passed.
-- Smoke script syntax: passed; hosted execution awaits a Render URL.
+- Flutter analyze: passed, no issues.
+- Flutter tests: 5 passed.
+- API build/typecheck: passed.
+- API unit/e2e suite: 7 suites and 30 tests passed.
+- PostgreSQL integration: skipped in this process because `DATABASE_URL` was
+  intentionally absent; the previously completed Phase 7 run passed 2 tests.
+- Staging APK build: passed.
 
 ## Known issues
 
-- Render service has not been created or deployed.
-- Public HTTPS URL is not available yet.
-- Render Free cold starts may delay the first request after idle.
-- CORS `*` should be narrowed when a hosted browser dashboard exists.
-- The corrected Blueprint must be redeployed before hosted smoke testing.
+- Auth tokens are held in memory and sign-in does not survive app restart.
+- Non-passenger dashboards are safe placeholders, not operational workflows.
+- Render Free cold starts can delay the first API request.
+- The debug APK is large and has not yet been installed on a physical device.
 
 ## Exact next task
 
-Redeploy the corrected Blueprint commit, then run the hosted smoke script. Once
-it passes, start Phase 9 mobile API integration with the HTTPS base URL.
+Install `apps/mobile_app/build/app/outputs/flutter-apk/app-debug.apk` on an
+Android device and run the friend-test checklist. Record device/Android version,
+install result, login, trip, booking/payment, taxi request, and cold-start timing.
 
 ## Secrets still needed
 
-Set the Supabase Session Pooler URL and strong JWT/encryption values only in
-Render's environment. No secret belongs in source, docs, or Flutter.
+None for installing this debug staging APK. Render retains database and JWT
+secrets; they must never be copied into Flutter or repository files.

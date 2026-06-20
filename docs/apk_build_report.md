@@ -1,52 +1,48 @@
 # APK Build Report
 
-## Current APK target
+## Phase 10 result
+
+The debug staging APK was built successfully on 2026-06-21.
 
 ```text
-apps/mobile_app/build/app/outputs/flutter-apk/app-debug.apk
+Path: apps/mobile_app/build/app/outputs/flutter-apk/app-debug.apk
+Size: 146,569,348 bytes (about 139.8 MiB)
+SHA-256: 617C8B17707363C9CDEB38EF7A9A1D66FCA92525CBD05AA76CB701E8C96357B3
+API: https://cameroon-bus-api-staging.onrender.com/api/v1
 ```
 
-## Current status
+The API URL was supplied at build time through `API_BASE_URL`; no Supabase
+credential is present in Flutter.
 
-No APK has been built yet.
-
-Reason:
-
-- Phase 2 explicitly prohibited APK builds.
-- Flutter app now exists at `apps/mobile_app`.
-- Flutter analyze and tests pass.
-- Flutter doctor reports no issues.
-- Build scripts are prepared for later APK phases.
-
-## Required local debug build
-
-After `apps/mobile_app` exists:
+## Build command
 
 ```powershell
-cd apps/mobile_app
-flutter clean
-flutter pub get
-flutter analyze
-flutter test
-flutter build apk --debug
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build_mobile_staging_apk.ps1 -ApiBaseUrl "https://cameroon-bus-api-staging.onrender.com/api/v1"
 ```
 
-## Required staging build
+The script ran `flutter clean`, `flutter pub get`, `flutter analyze`,
+`flutter test`, and:
 
 ```powershell
-cd apps/mobile_app
-flutter clean
-flutter pub get
-flutter analyze
-flutter test
-flutter build apk --debug --dart-define=API_BASE_URL=https://YOUR-HOSTED-API-DOMAIN/api/v1
+flutter build apk --debug --dart-define="API_BASE_URL=https://cameroon-bus-api-staging.onrender.com/api/v1"
 ```
 
-## Definition of done
+## Verification
 
-- APK exists at `apps/mobile_app/build/app/outputs/flutter-apk/app-debug.apk`.
-- APK opens on Android.
-- APK points to hosted HTTPS API for friend testing.
-- APK does not require localhost.
-- APK does not require Docker.
-- APK does not connect directly to Supabase.
+- Flutter analyze: passed with no issues.
+- Flutter tests: 5 passed.
+- APK existence and SHA-256: verified.
+- Hosted API smoke test: passed; database reported reachable.
+- Physical Android installation: not yet tested in this workspace.
+- APK is a debug build, not a signed release artifact.
+
+## Immediately testable
+
+A tester can install the APK, sign in with a seeded staging account, search real
+Buea-to-Bamenda trips, create a booking, confirm demo payment, view eligible
+destination taxi areas, and submit a taxi request. Render Free may make the
+first request slow after idle.
+
+Agency, dispatcher, driver, and super-admin users route to stable role-specific
+placeholder dashboards. Persistent sign-in, refresh-token rotation, complete
+booking history, and full non-passenger operations remain future work.

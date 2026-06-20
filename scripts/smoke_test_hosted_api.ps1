@@ -30,9 +30,14 @@ if ($health.status -ne 'ok' -or $health.database -ne 'reachable') {
     throw "Health check failed: status=$($health.status), database=$($health.database)."
 }
 
-$regions = @(Invoke-SmokeGet -Path 'regions')
-$cities = @(Invoke-SmokeGet -Path 'cities')
-$trips = @(Invoke-SmokeGet -Path 'trips/search?originCity=Buea&destinationCity=Bamenda')
+$regionsResponse = Invoke-SmokeGet -Path 'regions'
+$citiesResponse = Invoke-SmokeGet -Path 'cities'
+$tripsResponse = Invoke-SmokeGet -Path 'trips/search?originCity=Buea&destinationCity=Bamenda'
+
+# Invoke-RestMethod can preserve JSON arrays as one nested pipeline object in Windows PowerShell.
+$regions = @($regionsResponse | ForEach-Object { $_ })
+$cities = @($citiesResponse | ForEach-Object { $_ })
+$trips = @($tripsResponse | ForEach-Object { $_ })
 
 if ($regions.Count -lt 5) { throw 'Region response is incomplete.' }
 if ($cities.Count -lt 8) { throw 'City response is incomplete.' }

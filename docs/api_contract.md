@@ -165,3 +165,15 @@ Unknown fields return `400`; an ineligible area or unpaid booking returns `422`.
 - Identity-document image upload remains disabled/not implemented for staging.
 - Refresh-token rotation/revocation endpoints remain future work.
 - Agency and assigned-driver operational endpoints remain future work.
+
+## Phase 9 mobile client coverage
+
+The Flutter API client uses the hosted `/api/v1` contract for health, regions,
+cities, trip search, register/login, booking creation, demo payment, taxi
+eligibility, and taxi ride creation. Bearer tokens are added only to protected
+requests. Error responses are converted to readable client errors without
+logging credentials or tokens.
+
+The staging APK receives its API base URL through `--dart-define=API_BASE_URL`.
+The emulator default remains `http://10.0.2.2:3000/api/v1`; the built staging
+artifact uses `https://cameroon-bus-api-staging.onrender.com/api/v1`.

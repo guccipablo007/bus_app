@@ -6,18 +6,22 @@ Use Flutter Material 3 with a simple, modern, stylish, intuitive glassmorphism-i
 
 The design should feel calm, readable, and useful. Avoid visual noise.
 
-## Phase 2 implementation status
+## Phase 9 implementation status
 
-The mobile scaffold includes:
+The mobile app includes:
 
 - Material 3 enabled through `ThemeData(useMaterial3: true)`.
 - Green, ink, and light neutral seed palette.
-- Soft two-color login background.
+- Soft multi-tone auth and passenger backgrounds.
 - Reusable blurred `GlassPanel` with readable opacity and 8px radius.
 - Consistent 8px control/card radius.
 - Large accessible sign-in controls and restrained motion.
+- Clear loading, connectivity, error, trip, ticket, and taxi states.
+- Material navigation bars for the passenger workflow.
+- Compact operational placeholders for non-passenger roles.
 
-This is a foundation placeholder, not the final screen system.
+The passenger milestone is functional. Non-passenger operations and formal
+device accessibility testing remain future work.
 
 ## Keywords
 

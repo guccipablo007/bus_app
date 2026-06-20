@@ -1,30 +1,26 @@
 # Next Steps
 
-## Manual Render actions
+## Immediate device test
 
-1. Push this repository to a Git provider Render can access; do not change the
-   Git remote without explicit approval.
-2. In Render, choose **New > Blueprint** and select the repository.
-3. Review root `render.yaml` and select the Free plan.
-4. Set `DATABASE_URL` to the Supabase Session Pooler value.
-5. Confirm generated JWT access, JWT refresh, and ID-encryption values exist.
-6. Keep `NODE_ENV=staging`, `CORS_ORIGINS=*`, and auto-deploy off initially.
-7. Manually approve/create the Render service.
-8. Wait for build/start success and copy the public HTTPS service URL.
-9. Run the hosted smoke test from the repository root.
+1. Transfer the ignored debug APK from
+   `apps/mobile_app/build/app/outputs/flutter-apk/app-debug.apk`.
+2. Install it on an Android device after permitting installation from the file
+   source when Android requests it.
+3. Confirm the splash and login screens open without a crash.
+4. Use the seeded passenger staging login.
+5. Search Buea to Bamenda and confirm live trip results appear.
+6. Create a booking, confirm demo payment, and verify ticket details.
+7. Load eligible Bamenda taxi areas and submit a destination request.
+8. Record Render cold-start time, Android version, and any UI/network errors.
 
-Manual configuration alternative:
+## Product follow-up
 
-```text
-Build: npx -y pnpm@11.8.0 install --frozen-lockfile && npx -y pnpm@11.8.0 --filter api build
-Start: npx -y pnpm@11.8.0 --filter api start:prod
-Health: /api/v1/health
-```
+- Persist access/refresh tokens using secure device storage.
+- Implement refresh-token rotation and logout invalidation in the API.
+- Add persistent booking history and recovery after app restart.
+- Build real agency, dispatcher, driver, and super-admin operations.
+- Add device-level integration tests and accessibility checks.
+- Create release signing only after explicit user approval.
 
-These commands avoid the Render Corepack `EROFS` failure caused by attempts to
-modify read-only `/usr/bin/pnpm`.
-
-## Phase 9 gate
-
-After the smoke test reports `status: passed`, start Phase 9 and configure
-`apps/mobile_app` to consume the hosted `/api/v1` URL. Do not build the APK yet.
+Do not commit the APK or add Supabase credentials to Flutter. A release APK and
+keystore are intentionally outside the completed Phase 10 scope.

@@ -2,37 +2,41 @@
 
 ## Current status
 
-Phase 8 hosted API deployment preparation is complete. No deployment or APK
-build was performed.
+Phases 9 and 10 passed. The one Flutter app is integrated with the hosted API,
+and a debug staging APK exists at:
 
-The first Render build failed because Corepack attempted to modify read-only
-`/usr/bin/pnpm`. `render.yaml` now uses pinned `npx pnpm@11.8.0` commands that
-do not modify Render's system installation.
-
-## Prepared
-
-- Root `render.yaml` for a Render Free Web Service with auto-deploy disabled.
-- Exact pnpm workspace build/start commands.
-- Placeholder-only `services/api/.env.staging.example`.
-- Hosted HTTPS smoke script for health, regions, cities, and trip search.
-- Explicit Render `PORT` and configurable `CORS_ORIGINS` handling.
-- Staging/production startup validation for all required secrets and CORS.
-- Hosted health database ping with safe reachable/unreachable reporting.
+```text
+apps/mobile_app/build/app/outputs/flutter-apk/app-debug.apk
+```
 
 ## Verification
 
 ```text
-Build: passed
-Typecheck: passed
-Unit: 7 suites, 30 tests passed
-E2E: 1 suite, 10 tests passed
-PostgreSQL integration: 1 suite, 2 tests passed
-Hosted smoke script syntax: passed
-Hosted smoke execution: pending public Render URL
+Hosted smoke: passed; database reachable; 5 regions; 8 cities; 2 trips
+Flutter analyze: passed with no issues
+Flutter tests: 5 passed
+NestJS build: passed
+NestJS typecheck: passed
+NestJS unit/e2e suite: 7 suites, 30 tests passed
+Staging debug APK: built, 146,569,348 bytes
 ```
 
-## Phase gate
+The APK was built with:
 
-The user must manually create/configure/deploy the Render service next. Phase 9
-mobile API integration can begin after the public HTTPS API URL exists and the
-hosted smoke script passes.
+```text
+https://cameroon-bus-api-staging.onrender.com/api/v1
+```
+
+## Architecture check
+
+- One app only: `apps/mobile_app`.
+- Role selection comes from backend login response claims.
+- Flutter calls the hosted NestJS API only.
+- No local database, Supabase URL, database password, or service key is used by
+  the APK.
+- APK/build outputs remain ignored by Git.
+
+## Remaining validation
+
+Physical-device installation and friend testing are still required. Auth
+persistence and full non-passenger workflows are not part of this APK milestone.

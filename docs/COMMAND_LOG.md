@@ -416,3 +416,66 @@ Start: npx -y pnpm@11.8.0 --filter api start:prod
 
 Local API build, unit tests, and typecheck were rerun before committing. No APK,
 Supabase schema, seed, or credential file was touched.
+
+## 2026-06-21 - Hosted Render smoke test
+
+Command:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\smoke_test_hosted_api.ps1 -ApiBaseUrl "https://cameroon-bus-api-staging.onrender.com/api/v1"
+```
+
+The first run exposed a Windows PowerShell `Invoke-RestMethod` behavior that
+preserved each JSON array as one nested pipeline object. Direct endpoint checks
+confirmed 5 regions, 8 cities, and 2 trips. The script now explicitly flattens
+those arrays and the official rerun passed:
+
+```text
+status: passed
+service: cameroon-bus-api
+environment: staging
+database: reachable
+regions: 5
+cities: 8
+Buea -> Bamenda trips: 2
+```
+
+No authenticated write endpoint, migration, seed, Supabase credential, or APK
+build was used during the smoke test.
+
+## 2026-06-21 - Phases 9 and 10 mobile integration and staging APK
+
+Commands:
+
+```powershell
+cd apps/mobile_app
+flutter pub add http
+dart format lib test
+flutter pub get
+flutter analyze
+flutter test
+cd ../..
+cmd /c pnpm --filter api build
+cmd /c pnpm --filter api test
+cmd /c pnpm --filter api typecheck
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build_mobile_staging_apk.ps1 -ApiBaseUrl "https://cameroon-bus-api-staging.onrender.com/api/v1"
+Get-FileHash apps\mobile_app\build\app\outputs\flutter-apk\app-debug.apk -Algorithm SHA256
+```
+
+Results:
+
+```text
+Flutter analyze: no issues
+Flutter tests: 5 passed
+API build/typecheck: passed
+API tests: 7 suites, 30 tests passed
+API PostgreSQL integration: skipped because DATABASE_URL was absent
+APK build: passed
+APK size: 146,569,348 bytes
+APK SHA-256: 617C8B17707363C9CDEB38EF7A9A1D66FCA92525CBD05AA76CB701E8C96357B3
+```
+
+The first APK command invocation was terminated by a short command-runner
+timeout before completion. It was rerun with a normal Android build window and
+passed. During the first complete build, Flutter installed the required NDK
+28.2.13676358, Android SDK Build-Tools 36, and CMake 3.22.1.

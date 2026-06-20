@@ -1,7 +1,6 @@
 param(
-  [Parameter(Mandatory = $true)]
   [ValidatePattern('^https://')]
-  [string]$ApiBaseUrl
+  [string]$ApiBaseUrl = 'https://cameroon-bus-api-staging.onrender.com/api/v1'
 )
 
 $ErrorActionPreference = 'Stop'
