@@ -7,6 +7,7 @@ import '../features/dispatcher/taxi_dispatcher_shell.dart';
 import '../features/driver/taxi_driver_shell.dart';
 import '../features/passenger/passenger_home_shell.dart';
 import '../features/super_admin/super_admin_shell.dart';
+import '../services/session_storage.dart';
 import '../shared/models/user_role.dart';
 
 class RoleRouterScreen extends StatelessWidget {
@@ -14,10 +15,14 @@ class RoleRouterScreen extends StatelessWidget {
     super.key,
     required this.session,
     required this.apiClient,
+    this.sessionStorage,
+    this.onLogout,
   });
 
   final UserSession session;
   final ApiClient apiClient;
+  final SessionStorage? sessionStorage;
+  final VoidCallback? onLogout;
 
   @override
   Widget build(BuildContext context) {

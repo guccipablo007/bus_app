@@ -48,6 +48,18 @@ class UserSession {
   final String accessToken;
   final String refreshToken;
 
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'accessToken': accessToken,
+    'refreshToken': refreshToken,
+    'user': <String, dynamic>{
+      'id': userId,
+      'fullName': fullName,
+      'email': email,
+      'phone': phone,
+      'roles': roles.map((role) => role.claim).toList(growable: false),
+    },
+  };
+
   factory UserSession.fromJson(Map<String, dynamic> json) {
     final user = json['user'] as Map<String, dynamic>? ?? const {};
     final roles = (user['roles'] as List<dynamic>? ?? const [])

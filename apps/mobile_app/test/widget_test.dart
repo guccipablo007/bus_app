@@ -30,8 +30,10 @@ void main() {
   testWidgets('unauthenticated users see login', (tester) async {
     await tester.pumpWidget(MaterialApp(home: AuthCheck(apiClient: apiClient)));
 
-    expect(find.text('Welcome back'), findsOneWidget);
-    expect(find.text('Sign in to Cameroon Bus'), findsOneWidget);
+    expect(find.text('Cameroon Bus'), findsOneWidget);
+    expect(find.text('Choose your role to log in'), findsOneWidget);
+    expect(find.text('Sign in'), findsOneWidget);
+    expect(find.text('Create a new passenger account'), findsOneWidget);
   });
 
   test('backend roles map to the expected shells', () {

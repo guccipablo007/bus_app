@@ -12,10 +12,12 @@ class PassengerHomeShell extends StatefulWidget {
     super.key,
     required this.session,
     required this.apiClient,
+    this.onLogout,
   });
 
   final UserSession session;
   final ApiClient apiClient;
+  final VoidCallback? onLogout;
 
   @override
   State<PassengerHomeShell> createState() => _PassengerHomeShellState();
@@ -246,7 +248,9 @@ class _PassengerHomeShellState extends State<PassengerHomeShell> {
         actions: [
           IconButton(
             tooltip: 'Sign out',
-            onPressed: () => RoleRouterScreen.logout(context, widget.apiClient),
+            onPressed: () =>
+                widget.onLogout ??
+                () => RoleRouterScreen.logout(context, widget.apiClient),
             icon: const Icon(Icons.logout),
           ),
         ],
@@ -666,7 +670,8 @@ class _PassengerHomeShellState extends State<PassengerHomeShell> {
               const SizedBox(height: 16),
               OutlinedButton.icon(
                 onPressed: () =>
-                    RoleRouterScreen.logout(context, widget.apiClient),
+                    widget.onLogout ??
+                    () => RoleRouterScreen.logout(context, widget.apiClient),
                 icon: const Icon(Icons.logout),
                 label: const Text('Sign out'),
               ),
