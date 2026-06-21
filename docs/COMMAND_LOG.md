@@ -192,3 +192,25 @@ Hosted smoke passed passenger login, agency/driver submission, My Applications,
 seeded super-admin login/listing, approve, reject, and metadata-only document
 state. Two smoke runs created four staging application records. API checks passed
 30 tests/build/typecheck; Flutter analyze and all 16 tests passed. APK was not rebuilt.
+
+## 2026-06-21 - Phase 12B-D1 sign-out regression
+
+Root cause: `RoleRouterScreen` dropped `AuthCheck.onLogout`; passenger buttons
+returned a callback without invoking it; dashboard fallback did not clear storage.
+
+```powershell
+cd apps/mobile_app
+flutter pub get
+flutter analyze
+flutter test
+cd ../..
+cmd /c pnpm --filter api test
+cmd /c pnpm --filter api build
+cmd /c pnpm --filter api typecheck
+cd apps/mobile_app
+flutter build apk --debug --dart-define=API_BASE_URL=https://cameroon-bus-api-staging.onrender.com/api/v1
+```
+
+Results: Flutter analyze passed, 22 Flutter tests passed, 30 API tests passed,
+API build/typecheck passed, and APK build passed. New APK SHA-256:
+`FB3B158A216F1ABB2D0738FD68DA2FC4801BE9F46275EB34935DB02C21EB658F`.

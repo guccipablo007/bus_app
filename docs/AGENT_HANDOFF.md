@@ -2,61 +2,50 @@
 
 ## Current phase
 
-Phase 12B-C complete: onboarding migration and hosted deployment verified.
+Phase 12B-D1 complete: app-wide sign-out regression fixed.
+
+## Root cause
+
+`AuthCheck` created a correct clear-and-navigate callback, but
+`RoleRouterScreen.shellFor` did not pass it into any role shell. Passenger
+buttons also returned a callback from `onPressed` instead of invoking it.
+Fallback dashboard logout only navigated and did not clear persisted session,
+and super admin had no sign-out action.
 
 ## Completed
 
-- Applied only `008_onboarding_applications.sql` to Supabase staging.
-- Verified `agency_applications`, `driver_applications`, and
-  `application_documents` through `information_schema`.
-- User manually redeployed existing Render service `cameroon-bus-api-staging`
-  on commit `ef035c8`; no new service was created.
-- Hosted health reports `ok` and database `reachable`.
-- Hosted smoke passed passenger and super-admin login, both application types,
-  My Applications, admin listing, approve, and reject.
-- Added reusable `scripts/smoke_test_hosted_onboarding.ps1`.
-
-## Hosted smoke result
-
-```text
-Passenger login: passed
-Agency submission: passed
-Driver submission: passed
-My Applications: passed (4 smoke records after two runs)
-Super-admin login/list/review: passed
-Document handling: metadata_only
-```
-
-Seeded super admin exists:
-`superadmin.demo@cameroonbus.test` with the documented staging password.
+- Added shared `AppLogout.perform` coordinator.
+- Logout clears stored session and selected role before navigation.
+- Root navigator is replaced with login; Android Back cannot reopen a dashboard.
+- Routed the same callback through passenger, agency, dispatcher, driver,
+  super-admin, and multi-role selection paths.
+- Fixed both passenger sign-out buttons and added super-admin sign out.
+- Fixed clean-start Splash login to retain the created SessionStorage instance.
+- Added logout persistence/navigation/restart tests across role shells.
 
 ## Verification
 
 ```text
+Flutter analyze: no issues
+Flutter tests: 22 passed
 API tests: 30 passed
 API build/typecheck: passed
-Flutter analyze: no issues
-Flutter tests: 16 passed
+APK build: passed with hosted API dart-define
 ```
 
 ## APK
 
-Not rebuilt in Phase 12B-C because mobile source did not change. Continue using:
-
 ```text
-staging_artifacts/cameroon-bus-staging-debug.apk
-SHA-256: 0B2B6C31E67006ADC9F06ECF305095E4BCED3605C0E1ADCE0E393F9B4FD4694F
+Path: staging_artifacts/cameroon-bus-staging-debug.apk
+Size: 185,439,241 bytes
+SHA-256: FB3B158A216F1ABB2D0738FD68DA2FC4801BE9F46275EB34935DB02C21EB658F
 ```
-
-## Document handling
-
-Metadata/placeholder only. No file bytes are uploaded. Real upload still needs
-private object storage, authorization, validation, retention, and audit design.
 
 ## Exact next task
 
-Run the Phase 12B-C BlueStacks checklist in `docs/physical_device_test_plan.md`.
+Replace the BlueStacks APK, clear old app data, and run the sign-out matrix in
+`docs/physical_device_test_plan.md` before any new feature work.
 
 ## Secrets needed
 
-None for current staging QA.
+None.

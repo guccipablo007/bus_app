@@ -1,25 +1,22 @@
 # Physical Device Test Plan
 
-## Artifact and accounts
+## Artifact
 
 ```text
 APK: staging_artifacts/cameroon-bus-staging-debug.apk
-SHA-256: 0B2B6C31E67006ADC9F06ECF305095E4BCED3605C0E1ADCE0E393F9B4FD4694F
-Passenger: passenger.demo@cameroonbus.test / Password123!
-Super admin: superadmin.demo@cameroonbus.test / Password123!
+SHA-256: FB3B158A216F1ABB2D0738FD68DA2FC4801BE9F46275EB34935DB02C21EB658F
 ```
 
-## BlueStacks checks
+## Blocking sign-out matrix
 
-1. Clear old app data, install APK, and verify passenger login/session restore.
-2. Profile: open Apply as bus company, Apply as taxi driver, My Applications.
-3. Confirm empty forms show validation errors.
-4. Submit an agency application with a clearly fake document filename.
-5. Confirm pending-review screen and My Applications `submitted` status.
-6. Submit a driver application and verify it appears separately.
-7. Confirm all document wording says metadata/placeholder, never uploaded.
-8. Login as super admin; verify agency and driver queues plus metadata.
-9. Approve the agency application and reject the driver with a reason.
-10. Login as passenger; verify approved/rejected states and rejection reason.
-11. Confirm approval did not add agency/driver roles automatically.
-12. Repeat trip search, seat booking, demo payment, ticket, and taxi request.
+For each role below, login, tap Sign out, confirm login appears, press Android
+Back, and restart the app. The protected dashboard must never return.
+
+1. Passenger: test the app-bar icon and Profile `Sign out` button separately.
+2. Agency owner: test the app-bar sign-out icon.
+3. Taxi driver: test the app-bar sign-out icon.
+4. Super admin: test the app-bar sign-out icon beside Refresh.
+
+Also verify passenger session restore still works before signing out, and that
+signing in again after logout works normally. Then rerun booking/payment/ticket,
+taxi request, onboarding submission, My Applications, and admin review smoke QA.

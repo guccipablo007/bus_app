@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../auth/login_screen.dart';
 import '../core/api/api_client.dart';
 import '../features/agency/agency_shell.dart';
 import '../features/dispatcher/taxi_dispatcher_shell.dart';
@@ -8,6 +7,7 @@ import '../features/driver/taxi_driver_shell.dart';
 import '../features/passenger/passenger_home_shell.dart';
 import '../features/super_admin/super_admin_shell.dart';
 import '../services/session_storage.dart';
+import '../services/app_logout.dart';
 import '../shared/models/user_role.dart';
 
 class RoleRouterScreen extends StatelessWidget {
@@ -22,17 +22,24 @@ class RoleRouterScreen extends StatelessWidget {
   final UserSession session;
   final ApiClient apiClient;
   final SessionStorage? sessionStorage;
-  final VoidCallback? onLogout;
+  final Future<void> Function()? onLogout;
 
   @override
   Widget build(BuildContext context) {
     if (session.roles.length > 1) {
-      return RoleSwitchScreen(session: session, apiClient: apiClient);
+      return RoleSwitchScreen(
+        session: session,
+        apiClient: apiClient,
+        sessionStorage: sessionStorage,
+        onLogout: onLogout,
+      );
     }
     return shellFor(
       session.roles.firstOrNull,
       session: session,
       apiClient: apiClient,
+      sessionStorage: sessionStorage,
+      onLogout: onLogout,
     );
   }
 
@@ -40,38 +47,55 @@ class RoleRouterScreen extends StatelessWidget {
     UserRole? role, {
     required UserSession session,
     required ApiClient apiClient,
+    SessionStorage? sessionStorage,
+    Future<void> Function()? onLogout,
   }) {
     return switch (role) {
       UserRole.passenger => PassengerHomeShell(
         session: session,
         apiClient: apiClient,
+        sessionStorage: sessionStorage,
+        onLogout: onLogout,
       ),
-      UserRole.agencyOwner || UserRole.agencyAdmin || UserRole.agencyStaff =>
-        AgencyShell(session: session, apiClient: apiClient),
+      UserRole.agencyOwner ||
+      UserRole.agencyAdmin ||
+      UserRole.agencyStaff => AgencyShell(
+        session: session,
+        apiClient: apiClient,
+        sessionStorage: sessionStorage,
+        onLogout: onLogout,
+      ),
       UserRole.taxiDispatcher => TaxiDispatcherShell(
         session: session,
         apiClient: apiClient,
+        sessionStorage: sessionStorage,
+        onLogout: onLogout,
       ),
       UserRole.taxiDriver => TaxiDriverShell(
         session: session,
         apiClient: apiClient,
+        sessionStorage: sessionStorage,
+        onLogout: onLogout,
       ),
       UserRole.superAdmin => SuperAdminShell(
         session: session,
         apiClient: apiClient,
+        sessionStorage: sessionStorage,
+        onLogout: onLogout,
       ),
       null => const UnknownRoleScreen(),
     };
   }
 
-  static void logout(BuildContext context, ApiClient apiClient) {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute<void>(
-        builder: (_) => LoginScreen(apiClient: apiClient),
-      ),
-      (_) => false,
-    );
-  }
+  static Future<void> logout(
+    BuildContext context,
+    ApiClient apiClient, {
+    SessionStorage? sessionStorage,
+  }) => AppLogout.perform(
+    context,
+    apiClient: apiClient,
+    sessionStorage: sessionStorage,
+  );
 }
 
 class RoleSwitchScreen extends StatelessWidget {
@@ -79,10 +103,14 @@ class RoleSwitchScreen extends StatelessWidget {
     super.key,
     required this.session,
     required this.apiClient,
+    this.sessionStorage,
+    this.onLogout,
   });
 
   final UserSession session;
   final ApiClient apiClient;
+  final SessionStorage? sessionStorage;
+  final Future<void> Function()? onLogout;
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +132,8 @@ class RoleSwitchScreen extends StatelessWidget {
                   role,
                   session: session,
                   apiClient: apiClient,
+                  sessionStorage: sessionStorage,
+                  onLogout: onLogout,
                 ),
               ),
             ),

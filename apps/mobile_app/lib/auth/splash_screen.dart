@@ -29,8 +29,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Attempt to restore a previously saved session.
     UserSession? restored;
+    SessionStorage? storage;
     try {
-      final storage = await SessionStorage.create();
+      storage = await SessionStorage.create();
       restored = storage.loadSession();
       if (restored != null && mounted) {
         Navigator.of(context).pushReplacement(
@@ -51,7 +52,8 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
-        builder: (_) => LoginScreen(apiClient: widget.apiClient),
+        builder: (_) =>
+            LoginScreen(apiClient: widget.apiClient, sessionStorage: storage),
       ),
     );
   }

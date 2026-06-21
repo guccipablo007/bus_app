@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../core/api/api_client.dart';
-import '../../navigation/role_router_screen.dart';
+import '../../services/app_logout.dart';
+import '../../services/session_storage.dart';
 import '../models/user_role.dart';
 import 'glass_panel.dart';
 
@@ -15,6 +16,8 @@ class RoleDashboardShell extends StatelessWidget {
     required this.actions,
     this.statusText,
     this.note,
+    this.sessionStorage,
+    this.onLogout,
   });
 
   final String title;
@@ -24,6 +27,8 @@ class RoleDashboardShell extends StatelessWidget {
   final List<(IconData, String)> actions;
   final String? statusText;
   final String? note;
+  final SessionStorage? sessionStorage;
+  final Future<void> Function()? onLogout;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +38,18 @@ class RoleDashboardShell extends StatelessWidget {
         actions: [
           IconButton(
             tooltip: 'Sign out',
-            onPressed: () => RoleRouterScreen.logout(context, apiClient),
+            onPressed: () async {
+              final callback = onLogout;
+              if (callback != null) {
+                await callback();
+              } else {
+                await AppLogout.perform(
+                  context,
+                  apiClient: apiClient,
+                  sessionStorage: sessionStorage,
+                );
+              }
+            },
             icon: const Icon(Icons.logout),
           ),
         ],

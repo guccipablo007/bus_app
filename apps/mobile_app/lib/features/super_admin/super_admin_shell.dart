@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/api/api_exception.dart';
+import '../../services/app_logout.dart';
+import '../../services/session_storage.dart';
 import '../../shared/models/api_models.dart';
 import '../../shared/models/user_role.dart';
 import '../../shared/widgets/glass_panel.dart';
@@ -11,9 +13,13 @@ class SuperAdminShell extends StatefulWidget {
     super.key,
     required this.session,
     required this.apiClient,
+    this.sessionStorage,
+    this.onLogout,
   });
   final UserSession session;
   final ApiClient apiClient;
+  final SessionStorage? sessionStorage;
+  final Future<void> Function()? onLogout;
   @override
   State<SuperAdminShell> createState() => _SuperAdminShellState();
 }
@@ -44,6 +50,19 @@ class _SuperAdminShellState extends State<SuperAdminShell> {
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  Future<void> _logout() async {
+    final callback = widget.onLogout;
+    if (callback != null) {
+      await callback();
+      return;
+    }
+    await AppLogout.perform(
+      context,
+      apiClient: widget.apiClient,
+      sessionStorage: widget.sessionStorage,
+    );
   }
 
   Future<void> _review(
@@ -114,6 +133,11 @@ class _SuperAdminShellState extends State<SuperAdminShell> {
             onPressed: _loading ? null : _load,
             tooltip: 'Refresh',
             icon: const Icon(Icons.refresh),
+          ),
+          IconButton(
+            onPressed: _logout,
+            tooltip: 'Sign out',
+            icon: const Icon(Icons.logout),
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/api/api_client.dart';
 import '../navigation/role_router_screen.dart';
+import '../services/app_logout.dart';
 import '../services/session_storage.dart';
 import '../shared/models/user_role.dart';
 import 'login_screen.dart';
@@ -31,21 +32,11 @@ class _AuthCheckState extends State<AuthCheck> {
     _session = widget.restoredSession;
   }
 
-  void _onLogout() async {
-    try {
-      await widget.sessionStorage?.clearSession();
-    } catch (_) {}
-    if (!mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute<void>(
-        builder: (_) => LoginScreen(
-          apiClient: widget.apiClient,
-          sessionStorage: widget.sessionStorage,
-        ),
-      ),
-      (_) => false,
-    );
-  }
+  Future<void> _onLogout() => AppLogout.perform(
+    context,
+    apiClient: widget.apiClient,
+    sessionStorage: widget.sessionStorage,
+  );
 
   @override
   Widget build(BuildContext context) {

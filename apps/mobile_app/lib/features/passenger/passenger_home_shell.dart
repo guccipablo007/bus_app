@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../core/api/api_client.dart';
 import '../../core/api/api_exception.dart';
 import '../onboarding/onboarding_screens.dart';
-import '../../navigation/role_router_screen.dart';
+import '../../services/app_logout.dart';
+import '../../services/session_storage.dart';
 import '../../shared/models/api_models.dart';
 import '../../shared/models/user_role.dart';
 import '../../shared/widgets/glass_panel.dart';
@@ -14,11 +15,13 @@ class PassengerHomeShell extends StatefulWidget {
     required this.session,
     required this.apiClient,
     this.onLogout,
+    this.sessionStorage,
   });
 
   final UserSession session;
   final ApiClient apiClient;
-  final VoidCallback? onLogout;
+  final Future<void> Function()? onLogout;
+  final SessionStorage? sessionStorage;
 
   @override
   State<PassengerHomeShell> createState() => _PassengerHomeShellState();
@@ -225,6 +228,19 @@ class _PassengerHomeShellState extends State<PassengerHomeShell> {
     }
   }
 
+  Future<void> _logout() async {
+    final callback = widget.onLogout;
+    if (callback != null) {
+      await callback();
+      return;
+    }
+    await AppLogout.perform(
+      context,
+      apiClient: widget.apiClient,
+      sessionStorage: widget.sessionStorage,
+    );
+  }
+
   void _showError(String message) {
     if (!mounted) return;
     setState(() => _error = message);
@@ -249,9 +265,7 @@ class _PassengerHomeShellState extends State<PassengerHomeShell> {
         actions: [
           IconButton(
             tooltip: 'Sign out',
-            onPressed: () =>
-                widget.onLogout ??
-                () => RoleRouterScreen.logout(context, widget.apiClient),
+            onPressed: _logout,
             icon: const Icon(Icons.logout),
           ),
         ],
@@ -710,9 +724,7 @@ class _PassengerHomeShellState extends State<PassengerHomeShell> {
               ),
               const Divider(),
               OutlinedButton.icon(
-                onPressed: () =>
-                    widget.onLogout ??
-                    () => RoleRouterScreen.logout(context, widget.apiClient),
+                onPressed: _logout,
                 icon: const Icon(Icons.logout),
                 label: const Text('Sign out'),
               ),
