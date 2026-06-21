@@ -2,53 +2,61 @@
 
 ## Current phase
 
-Phase 12B-B implemented and locally verified. Hosted rollout is pending.
+Phase 12B-C complete: onboarding migration and hosted deployment verified.
 
 ## Completed
 
-- Added migration `008_onboarding_applications.sql` with agency applications,
-  driver applications, and application document metadata.
-- Added passenger submit/list APIs and super-admin list/review APIs.
-- Approval/rejection is status-only; it does not create agencies/drivers or roles.
-- Added passenger agency/driver forms, My Applications, and pending-review screen.
-- Added live super-admin review queue and clearer agency/driver placeholders.
-- Added backend e2e and Flutter widget coverage.
-- Built the ignored debug staging APK with the hosted API dart-define.
+- Applied only `008_onboarding_applications.sql` to Supabase staging.
+- Verified `agency_applications`, `driver_applications`, and
+  `application_documents` through `information_schema`.
+- User manually redeployed existing Render service `cameroon-bus-api-staging`
+  on commit `ef035c8`; no new service was created.
+- Hosted health reports `ok` and database `reachable`.
+- Hosted smoke passed passenger and super-admin login, both application types,
+  My Applications, admin listing, approve, and reject.
+- Added reusable `scripts/smoke_test_hosted_onboarding.ps1`.
 
-## Document handling
+## Hosted smoke result
 
-Metadata only. The app records document type and filename with a staging
-placeholder path. It does not upload file bytes. Real uploads require a private
-Supabase Storage bucket, server-side credentials, size/type checks, signed URLs,
-malware policy, retention rules, and manual environment configuration.
+```text
+Passenger login: passed
+Agency submission: passed
+Driver submission: passed
+My Applications: passed (4 smoke records after two runs)
+Super-admin login/list/review: passed
+Document handling: metadata_only
+```
+
+Seeded super admin exists:
+`superadmin.demo@cameroonbus.test` with the documented staging password.
 
 ## Verification
 
 ```text
+API tests: 30 passed
+API build/typecheck: passed
 Flutter analyze: no issues
 Flutter tests: 16 passed
-API unit tests: 30 passed
-API e2e tests: 11 passed
-API build/typecheck: passed
-Migration validation: passed, 8 files / 28 tables
 ```
 
 ## APK
 
+Not rebuilt in Phase 12B-C because mobile source did not change. Continue using:
+
 ```text
 staging_artifacts/cameroon-bus-staging-debug.apk
-185,439,241 bytes
-SHA-256 0B2B6C31E67006ADC9F06ECF305095E4BCED3605C0E1ADCE0E393F9B4FD4694F
+SHA-256: 0B2B6C31E67006ADC9F06ECF305095E4BCED3605C0E1ADCE0E393F9B4FD4694F
 ```
 
-## Known issue / exact next task
+## Document handling
 
-The code is not live on hosted staging yet. Apply only migration `008` using
-`push_supabase_schema.ps1 -MigrationPath database/migrations/008_onboarding_applications.sql`
-and the existing process-only `DATABASE_URL`, then redeploy the existing Render service.
-Do not test hosted submission/review before both steps complete.
+Metadata/placeholder only. No file bytes are uploaded. Real upload still needs
+private object storage, authorization, validation, retention, and audit design.
+
+## Exact next task
+
+Run the Phase 12B-C BlueStacks checklist in `docs/physical_device_test_plan.md`.
 
 ## Secrets needed
 
-No new secrets. A real upload phase would require manually configured private
-storage credentials; none were guessed or committed.
+None for current staging QA.

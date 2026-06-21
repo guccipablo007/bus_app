@@ -1,14 +1,17 @@
 # Build Status
 
-Phase 12B-B source and local tests pass.
+Phase 12B-C is live and verified on hosted staging.
 
 ```text
-Flutter: analyze passed; 16 tests passed
-NestJS: 30 unit + 11 e2e passed; build/typecheck passed
-Migrations: validation passed (8 SQL files, 28 required tables)
-APK: 185,439,241 bytes
-SHA-256: 0B2B6C31E67006ADC9F06ECF305095E4BCED3605C0E1ADCE0E393F9B4FD4694F
+Migration 008: applied
+Onboarding tables: 3 verified
+Render commit: ef035c8, manually deployed
+Hosted health/database: ok/reachable
+Hosted onboarding smoke: passed
+Super-admin demo: verified
+API tests/build/typecheck: passed
+Flutter analyze/tests: passed (16 tests)
 ```
 
-Hosted state: existing passenger APIs remain live, but onboarding migration/API
-deployment is pending. The new APK must be retested after that rollout.
+APK was not rebuilt; the Phase 12B-B artifact already contains the onboarding UI.
+Document entries remain metadata-only placeholders.

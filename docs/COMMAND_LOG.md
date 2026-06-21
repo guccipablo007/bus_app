@@ -160,3 +160,35 @@ SQL files and 28 required tables. APK size is 185,439,241 bytes; SHA-256 is
 No migration was pushed and no service was deployed. Documents remain metadata-only.
 The migration runner was extended with a single-file path option so rollout can
 apply `008` without rerunning the seven already-applied migrations.
+
+## 2026-06-21 - Phase 12B-C hosted onboarding deployment verification
+
+Applied only migration `008` using the ignored Session Pooler connection loaded
+into a process-only `DATABASE_URL`. The migration completed as one transaction.
+
+Read-only `information_schema` verification:
+
+```text
+agency_applications: 16 columns
+driver_applications: 15 columns
+application_documents: 11 columns
+```
+
+The user manually deployed existing Render service `cameroon-bus-api-staging`
+on commit `ef035c8`. Health returned `ok` and database `reachable`; the protected
+admin route changed from pre-deploy `404` to expected unauthenticated `401`.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\smoke_test_hosted_onboarding.ps1
+cmd /c pnpm --filter api test
+cmd /c pnpm --filter api build
+cmd /c pnpm --filter api typecheck
+cd apps/mobile_app
+flutter analyze
+flutter test
+```
+
+Hosted smoke passed passenger login, agency/driver submission, My Applications,
+seeded super-admin login/listing, approve, reject, and metadata-only document
+state. Two smoke runs created four staging application records. API checks passed
+30 tests/build/typecheck; Flutter analyze and all 16 tests passed. APK was not rebuilt.

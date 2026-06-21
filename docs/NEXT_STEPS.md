@@ -1,13 +1,11 @@
 # Next Steps
 
-1. Load the ignored Supabase Session Pooler URL into process-only `DATABASE_URL`.
-2. Apply only the new migration:
-   `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\push_supabase_schema.ps1 -MigrationPath database/migrations/008_onboarding_applications.sql`.
-3. Redeploy the existing Render service from the new commit.
-4. Smoke-test all five onboarding/admin endpoints.
-5. Install the rebuilt APK in BlueStacks and run the application/review plan.
-6. Decide whether status approval should later create agency/driver records and
-   roles through a separate audited workflow.
-7. Design private Supabase Storage before implementing real document upload.
+1. Install the existing staging APK in BlueStacks and clear old app data.
+2. Submit agency and driver applications as the passenger demo.
+3. Verify both appear in My Applications with metadata-only document labels.
+4. Login as seeded super admin and approve one/reject one with a reason.
+5. Return to passenger login and verify final statuses and rejection reason.
+6. Reconfirm booking/payment/ticket/taxi regression flows.
 
-Do not upload documents, create roles, or treat approval as production onboarding yet.
+After QA, design audited provisioning from approved applications and private
+object storage. Do not treat metadata placeholders as uploaded documents.

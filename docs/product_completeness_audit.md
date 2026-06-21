@@ -1,30 +1,23 @@
 # Product Completeness Audit
 
-## Working
+## Hosted and verified
 
-- Hosted passenger auth, session restore, trip search, booking, demo payment,
-  ticket, taxi eligibility, and taxi request.
-- Local onboarding API/UI: agency and driver submission, own list, admin list,
-  approve/reject, rejection reason, and metadata documents.
-- Backend authorization for passenger submission and super-admin review.
-
-## Pending hosted rollout
-
-- Apply migration `008_onboarding_applications.sql` to Supabase.
-- Redeploy the existing Render API and smoke-test all onboarding endpoints.
-- Repeat BlueStacks onboarding/admin review QA.
+- Passenger authentication/session, search, booking, payment, ticket, and taxi.
+- Agency/driver application submission and My Applications.
+- Super-admin application listing, approval, and rejection reason.
+- PostgreSQL onboarding tables and backend role authorization.
 
 ## Placeholder only
 
-- Document files are not uploaded. Only type/filename metadata is stored.
-- Approval does not provision agencies, staff roles, taxi drivers, or vehicles.
-- Agency operations, dispatch, live ride tracking, and broad admin tools.
+- Documents: metadata only, no upload bytes or private storage.
+- Approval: status only, no agency/driver creation or role provisioning.
+- Full agency operations, dispatch, ride tracking, and broad admin tooling.
 
 ## Before production
 
-- Private object storage, signed upload/download, authorization, scanning, file
-  limits, retention/deletion, encryption, and audit logging.
-- Secure token storage and refresh/revocation lifecycle.
+- Private object storage with signed access, validation/scanning, retention,
+  deletion, encryption, and audit logs.
 - Audited provisioning from approved applications.
-- Real payments, notifications, localization, accessibility/device matrix,
-  monitoring, backups, release signing, privacy policy, and operational support.
+- Secure token storage, refresh/revocation, real payments, notifications,
+  localization, accessibility/device matrix, monitoring, backups, privacy policy,
+  release signing, and operational support.
