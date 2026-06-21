@@ -1,17 +1,31 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:mobile_app/config/api_config.dart';
 import 'package:mobile_app/core/api/api_client.dart';
 import 'package:mobile_app/core/api/api_exception.dart';
 import 'package:mobile_app/shared/models/user_role.dart';
 
 void main() {
+  test('default API URL points to hosted staging', () {
+    expect(
+      ApiConfig.baseUrl,
+      'https://cameroon-bus-api-staging.onrender.com/api/v1',
+    );
+  });
+
   test('login uses backend-provided roles', () async {
     final client = ApiClient(
       baseUrl: 'https://example.test/api/v1/',
       httpClient: MockClient((request) async {
         expect(request.url.path, '/api/v1/auth/login');
         expect(request.method, 'POST');
+        expect(jsonDecode(request.body), {
+          'identifier': 'passenger.demo@cameroonbus.test',
+          'password': 'Password123!',
+        });
         return http.Response(
           '''
           {
@@ -33,8 +47,8 @@ void main() {
     );
 
     final session = await client.login(
-      identifier: 'agency@example.test',
-      password: 'not-a-real-secret',
+      identifier: 'passenger.demo@cameroonbus.test',
+      password: 'Password123!',
     );
 
     expect(session.fullName, 'Agency User');

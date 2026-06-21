@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../../shared/models/api_models.dart';
@@ -13,7 +15,7 @@ class ApiClient {
 
   final String baseUrl;
   final http.Client _http;
-  static const _timeout = Duration(seconds: 90);
+  static const _timeout = Duration(seconds: 120);
 
   Future<Map<String, dynamic>> health() async =>
       _asMap(await _request('GET', '/health'));
@@ -168,21 +170,48 @@ class ApiClient {
       };
     } on ApiException {
       rethrow;
-    } catch (_) {
+    } catch (error, stackTrace) {
+      if (kDebugMode) {
+        developer.log(
+          'API transport failure: $method $uri (${error.runtimeType})',
+          name: 'cameroon_bus.api',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
       throw const ApiException(
-        'Could not reach the bus service. Check your connection and try again.',
+        'Could not reach the bus service. Please try again.',
       );
     }
 
-    final decoded = response.body.isEmpty ? null : jsonDecode(response.body);
+    dynamic decoded;
+    try {
+      decoded = response.body.isEmpty ? null : jsonDecode(response.body);
+    } on FormatException catch (error, stackTrace) {
+      if (kDebugMode) {
+        developer.log(
+          'API returned invalid JSON: $method $uri (${response.statusCode})',
+          name: 'cameroon_bus.api',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
+      throw const ApiException(
+        'The server had a problem. Please try again later.',
+        statusCode: 500,
+      );
+    }
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final error = decoded is Map<String, dynamic>
           ? decoded
           : const <String, dynamic>{};
       final rawMessage = error['message'];
-      final message = rawMessage is List
+      var message = rawMessage is List
           ? rawMessage.join('\n')
           : rawMessage?.toString() ?? 'The request could not be completed.';
+      if (response.statusCode >= 500) {
+        message = 'The server had a problem. Please try again later.';
+      }
       throw ApiException(message, statusCode: response.statusCode);
     }
     return decoded;

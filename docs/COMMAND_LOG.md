@@ -92,3 +92,41 @@ flutter build apk --debug          # √ Built (173.9s)
 Copy-Item app-debug.apk → staging_artifacts/cameroon-bus-staging-debug.apk
 SHA-256: 50ADCBD4A52DEAF9F2E10FA45710AD9B67E444D6EC20359A571A1EE38F26627B
 ```
+
+## 2026-06-21 - Phase 12B-A1 login connectivity repair
+
+Initial state was clean at `1f9f913`. Hosted health passed after a 35-second
+Render cold start.
+
+Direct login results:
+
+```text
++237670000001 / pass123 -> HTTP 400 (LoginDto requires 8+ characters)
+passenger.demo@cameroonbus.test / Password123! -> HTTP 200, passenger role
+```
+
+Working body:
+
+```json
+{"identifier":"passenger.demo@cameroonbus.test","password":"Password123!"}
+```
+
+Commands:
+
+```powershell
+cd apps/mobile_app
+flutter pub get
+flutter analyze
+flutter test
+cd ../..
+cmd /c pnpm --filter api test
+cmd /c pnpm --filter api build
+cmd /c pnpm --filter api typecheck
+cd apps/mobile_app
+flutter build apk --debug --dart-define=API_BASE_URL=https://cameroon-bus-api-staging.onrender.com/api/v1
+```
+
+Flutter analyze passed; 11 Flutter tests passed; 30 API tests passed; API
+build/typecheck passed; APK build passed. The ignored artifact is 185,439,241
+bytes with SHA-256
+`481417420244873900F2E5BE25144C1F09744DA1189B9973F9CC5628B503E869`.

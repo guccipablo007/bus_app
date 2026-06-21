@@ -28,24 +28,24 @@ class DemoAccount {
     label: 'Passenger',
     icon: Icons.person_outline,
     color: Color(0xFF2E7D32),
-    identifier: '+237670000001',
-    password: 'pass123',
+    identifier: 'passenger.demo@cameroonbus.test',
+    password: 'Password123!',
   );
 
   static const agency = DemoAccount(
     label: 'Bus company',
     icon: Icons.business_outlined,
     color: Color(0xFF1565C0),
-    identifier: '+237670000010',
-    password: 'pass123',
+    identifier: 'agency.owner.demo@cameroonbus.test',
+    password: 'Password123!',
   );
 
   static const taxiDriver = DemoAccount(
     label: 'Taxi driver',
     icon: Icons.local_taxi_outlined,
     color: Color(0xFFE65100),
-    identifier: '+237670000020',
-    password: 'pass123',
+    identifier: 'driver.demo@cameroonbus.test',
+    password: 'Password123!',
   );
 
   static const all = [passenger, agency, taxiDriver];

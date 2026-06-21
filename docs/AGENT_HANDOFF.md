@@ -1,126 +1,75 @@
-  # Agent Handoff
+# Agent Handoff
 
-  ## Current phase
+## Current phase
 
-  **Phase 12B-A (auth/session) — complete** (GLM 5.2, sessions 3–4).
+Phase 12B-A1 complete: hosted login connectivity regression repaired.
 
-  Session persistence, improved login flow, profile section enhancements, test
-  fixes, and verification checks implemented. This is a sub-phase of Phase 12B;
-  full onboarding/document/admin work remains pending.
+## What was completed
 
-  ## What was completed
+- Confirmed the initial worktree was clean with no partial agent edits.
+- Verified hosted health and database reachability.
+- Verified the backend login body is exactly `identifier` plus `password`.
+- Proved the seeded hosted passenger login returns HTTP 200.
+- Corrected demo helpers to use accounts actually seeded in Supabase.
+- Made hosted Render the safe API default and rebuilt with an explicit dart-define.
+- Added status-specific errors and debug-only transport diagnostics.
+- Added config, payload, error, demo-fill, and session-save regression tests.
 
-  - Created `SessionStorage` service (SharedPreferences-based persistence).
-  - Rewrote `LoginScreen` with demo helper buttons, role selection, session save.
-  - Rewrote `SplashScreen` — restores session on app start, auto-routes.
-  - Rewrote `AuthCheck` — simplified session-based restoration.
-  - Updated `RoleRouterScreen` — added `onLogout` callback, multi-role support.
-  - Updated `PassengerHomeShell` — added `onLogout` callback, used by both
-    sign-out buttons (app bar and profile).
-  - Ran `flutter pub get` — resolved dependencies.
-  - Ran `flutter analyze` — **No issues found**.
-  - Ran `flutter test` — **5/5 passed** (fixed widget test for new login UI).
-  - Ran `pnpm --filter api test` — **7 suites, 30 tests, all passed**.
-  - Ran `pnpm --filter api build` — passed.
-  - Ran `pnpm --filter api typecheck` — passed.
-  - Rebuilt debug APK — **√ Built**.
-  - Copied APK to `staging_artifacts/cameroon-bus-staging-debug.apk`.
-  - SHA-256: `50ADCBD4A52DEAF9F2E10FA45710AD9B67E444D6EC20359A571A1EE38F26627B`
-  - Verified `.gitignore` safety (no secrets, no APK files, no staging_artifacts
-    staged).
-  - Updated all docs: AGENT_HANDOFF, BUILD_STATUS, NEXT_STEPS, COMMAND_LOG.
-  - Committed/pushed safe source and docs changes.
+## Root cause
 
-  ## Known issue fixed
+Commit `1f9f913` rebuilt with plain `flutter build apk --debug`, omitting the
+staging dart-define. `ApiConfig` therefore selected `10.0.2.2` in BlueStacks.
+The rewrite also introduced `+237670000001 / pass123`; `pass123` violates the
+backend eight-character minimum and that phone is not assigned to the seeded user.
 
-  - **Auth tokens were held in memory** — sign-in did not survive app restart.
-    ✅ Now fixed. `SessionStorage` persists access token, profile, and roles.
-    SplashScreen restores session automatically.
+## Working hosted login
 
-  ## Known production concerns (not blockers)
+```json
+{
+  "identifier": "passenger.demo@cameroonbus.test",
+  "password": "Password123!"
+}
+```
 
-  - `SharedPreferences` is acceptable for **staging** but **must** be replaced
-    with `flutter_secure_storage` before any production or release-APK build.
-  - Non-passenger dashboards (agency, dispatcher, driver, super-admin) remain
-    at placeholder/incomplete level unless explicitly improved.
-  - Full company onboarding, identity-document upload, and admin-approval
-    workflows are **not yet implemented**.
+The hosted endpoint returned HTTP 200, passenger role, and both tokens. Token
+values were not logged.
 
-  ## Files created / changed
+## Files changed
 
-  - `apps/mobile_app/lib/services/session_storage.dart` — **created**
-  - `apps/mobile_app/lib/auth/login_screen.dart` — **rewritten**
-  - `apps/mobile_app/lib/auth/splash_screen.dart` — **rewritten**
-  - `apps/mobile_app/lib/auth/auth_check.dart` — **rewritten**
-  - `apps/mobile_app/lib/navigation/role_router_screen.dart` — **rewritten**
-  - `apps/mobile_app/lib/features/passenger/passenger_home_shell.dart` — **updated**
-    (added `onLogout` callback, improved profile sign-out)
-  - `apps/mobile_app/test/widget_test.dart` — **fixed** (updated login widget
-    expect matches to match new UI text)
-  - `docs/BUILD_STATUS.md` — updated
-  - `docs/AGENT_HANDOFF.md` — updated
-  - `docs/NEXT_STEPS.md` — updated
-  - `docs/COMMAND_LOG.md` — updated
+- Flutter API config, API client, auth service, login helper, and auth tests
+- Phase status, build, limitation, friend-testing, and device-test docs
 
-  ## Commands run (this session)
+## Verification
 
-  ```powershell
-  # Flutter checks
-  cd apps\mobile_app && flutter pub get            # Got dependencies
-  cd apps\mobile_app && flutter analyze            # No issues found
-  cd apps\mobile_app && flutter test               # 5/5 passed
+```text
+Flutter analyze: no issues
+Flutter tests: 11 passed
+NestJS tests: 7 suites, 30 passed
+NestJS build/typecheck: passed
+APK build with hosted dart-define: passed
+```
 
-  # Backend checks
-  cmd /c pnpm --filter api test                    # 7 suites, 30 tests, all passed
-  cmd /c pnpm --filter api build                   # nest build — passed
-  cmd /c pnpm --filter api typecheck               # tsc --noEmit — 0 errors
+## APK
 
-  # Git safety
-  git status                                       # Clean — no secrets, APKs, or artifacts
+```text
+Path: staging_artifacts/cameroon-bus-staging-debug.apk
+Size: 185,439,241 bytes
+SHA-256: 481417420244873900F2E5BE25144C1F09744DA1189B9973F9CC5628B503E869
+```
 
-  # Git commit and push
-  git add -A                                        # Source + docs only
-  git commit -m "Improve auth entry and persistent session"
-  git push origin main
-  ```
+The APK and `staging_artifacts/` remain ignored.
 
-  ## Verification results
+## Known issues
 
-  | Check | Result |
-  |-------|--------|
-  | `flutter pub get` | ✅ resolved |
-  | `flutter analyze` | ✅ no issues found |
-  | `flutter test` | ✅ 5/5 passed |
-  | `pnpm --filter api test` | ✅ 7 suites, 30 tests passed |
-  | `pnpm --filter api build` | ✅ nest build passed |
-  | `pnpm --filter api typecheck` | ✅ tsc --noEmit, 0 errors |
-  | `git status` safety check | ✅ no secrets/APKs staged |
-  | APK path | `staging_artifacts/cameroon-bus-staging-debug.apk` |
-  | APK SHA-256 | `50ADCBD4A52DEAF9F2E10FA45710AD9B67E444D6EC20359A571A1EE38F26627B` |
+- Render Free cold starts can delay login; client timeout is 120 seconds.
+- SharedPreferences is staging-only token storage; production needs secure storage.
+- Non-passenger dashboards remain placeholders.
 
-  ## Known issues remaining
+## Exact next task
 
-  - No `test/` directory in `apps/mobile_app` — test folder not yet scaffolded.
-  - Non-passenger dashboards are safe placeholders, not operational workflows.
-  - Render Free cold starts can delay the first API request (10–30 s).
-  - SharedPreferences used for staging; must be replaced with
-    `flutter_secure_storage` for production.
-  - Full company onboarding, document upload, and admin approval still pending.
-  - No identity-document upload or ID verification workflow exists yet.
-  - Non-passenger dashboards are placeholder-level only unless improved.
+Replace the BlueStacks APK, clear old app data, and repeat the login/session and
+passenger regression checklist in `docs/physical_device_test_plan.md`.
 
-  ## Exact next task
+## Secrets still needed
 
-  **BlueStacks / physical-device QA.**
-  Install the APK, test all passenger flows (login, trip search, booking, taxi
-  eligibility), and report any issues. See `docs/friend_testing_guide.md` for
-  instructions.
-
-  The friend-testing package is ready:
-  - APK: `staging_artifacts/cameroon-bus-staging-debug.apk`
-  - SHA-256: `staging_artifacts/APK_CHECKSUM.txt`
-
-  ## Secrets still needed
-
-  None. The APK connects to the hosted Render API. No Supabase credentials,
-  database passwords, or JWT secrets are in the repository or the APK.
+None.

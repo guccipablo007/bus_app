@@ -1,58 +1,29 @@
 # Build Status
 
-## Current status
+## Phase 12B-A1
 
-Phases 9 and 10 passed. The one Flutter app is integrated with the hosted API,
-and a debug staging APK exists at:
-
-```text
-apps/mobile_app/build/app/outputs/flutter-apk/app-debug.apk
-```
-
-## Latest verification (2026-06-21 — GLM 5.2, session 4 — Phase 12B-A full pass)
+Hosted login connectivity regression fixed and debug staging APK rebuilt.
 
 ```text
-Flutter analyze:      no issues found
-Flutter test:         5/5 passed (api_client + widget tests)
-NestJS build:         passed (nest build)
-NestJS typecheck:     passed (tsc --noEmit, 0 errors)
-NestJS unit tests:    7 suites, 30 tests, all passed
-Staging debug APK:    staging_artifacts/cameroon-bus-staging-debug.apk
-SHA-256:              50ADCBD4A52DEAF9F2E10FA45710AD9B67E444D6EC20359A571A1EE38F26627B
+Hosted health: ok; database reachable
+Hosted passenger login: HTTP 200
+Flutter analyze: no issues
+Flutter tests: 11 passed
+API tests: 7 suites, 30 passed
+API build/typecheck: passed
+APK size: 185,439,241 bytes
+APK SHA-256: 481417420244873900F2E5BE25144C1F09744DA1189B9973F9CC5628B503E869
 ```
 
-## Architecture check
+Build command:
 
-- One app only: `apps/mobile_app`.
-- Role selection comes from backend login response claims.
-- Flutter calls the hosted NestJS API only.
-- No local database, Supabase URL, database password, or service key is used by
-  the APK.
-- APK/build outputs and `staging_artifacts/` remain ignored by Git.
+```powershell
+flutter build apk --debug --dart-define=API_BASE_URL=https://cameroon-bus-api-staging.onrender.com/api/v1
+```
 
-## Phase 12B additions (this session)
+The app default is also hosted staging, preventing an accidental plain debug
+build from silently targeting BlueStacks host loopback. Local API testing must
+pass its URL explicitly with `--dart-define`.
 
-- **Session persistence:** Created `SessionStorage` (SharedPreferences-based).
-  Login now survives app restarts — tokens and profile are restored on splash.
-- **Improved login flow:** Rewrote `LoginScreen` with demo helper buttons, role
-  selection for multi-role users, and session storage on successful login.
-- **SplashScreen rewrite:** Checks `SessionStorage` for existing session;
-  auto-routes to `RoleRouterScreen` or login accordingly.
-- **AuthCheck rewrite:** Simplified to use session restoration with loading
-  spinner, then navigate to role router.
-- **RoleRouterScreen update:** Supports `onLogout` callback that clears session
-  and navigates back to login; handles multi-role user selection.
-- **PassengerHomeShell update:** Accepts `onLogout` callback and uses it in
-  navigation bar sign-out and profile sign-out buttons.
-
-## Remaining validation
-
-Physical-device installation and friend testing are the next step. The
-friend-testing package, guide, known-limitations doc, and USB install script
-are all ready.
-
-## VS Code workspace readiness
-
-- `.vscode/extensions.json` — created with 13 recommended extensions
-- `.vscode/settings.json` — created with safe project-wide settings
-- All checks pass
+One app remains at `apps/mobile_app`. No backend, database schema, deployment,
+keystore, or secret changed.
