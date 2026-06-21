@@ -19,11 +19,12 @@ class AgencyShell extends StatelessWidget {
     icon: Icons.business_outlined,
     session: session,
     apiClient: apiClient,
+    statusText: 'Approved staging agency account',
+    note: 'Full agency operations are coming next.',
     actions: const [
-      (Icons.route_outlined, 'Trips'),
-      (Icons.groups_outlined, 'Passenger manifests'),
-      (Icons.directions_bus_outlined, 'Fleet'),
-      (Icons.local_taxi_outlined, 'Taxi operations'),
+      (Icons.route_outlined, 'Routes and trips'),
+      (Icons.directions_bus_outlined, 'Buses'),
+      (Icons.groups_outlined, 'Bookings and passenger manifests'),
     ],
   );
 }

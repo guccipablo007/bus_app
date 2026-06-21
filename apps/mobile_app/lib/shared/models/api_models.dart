@@ -209,3 +209,59 @@ class TaxiRideModel {
     estimatedFareXaf: (json['estimatedFareXaf'] as num?)?.toInt() ?? 0,
   );
 }
+
+class ApplicationDocumentModel {
+  const ApplicationDocumentModel({
+    required this.documentType,
+    required this.originalFilename,
+    required this.status,
+  });
+
+  final String documentType;
+  final String originalFilename;
+  final String status;
+
+  factory ApplicationDocumentModel.fromJson(Map<String, dynamic> json) =>
+      ApplicationDocumentModel(
+        documentType: json['documentType'] as String? ?? '',
+        originalFilename: json['originalFilename'] as String? ?? '',
+        status: json['status'] as String? ?? 'metadata_only',
+      );
+}
+
+class OnboardingApplicationModel {
+  const OnboardingApplicationModel({
+    required this.id,
+    required this.applicationType,
+    required this.applicantName,
+    required this.city,
+    required this.status,
+    required this.documents,
+    this.companyName,
+    this.rejectionReason,
+  });
+
+  final String id;
+  final String applicationType;
+  final String applicantName;
+  final String city;
+  final String status;
+  final String? companyName;
+  final String? rejectionReason;
+  final List<ApplicationDocumentModel> documents;
+
+  factory OnboardingApplicationModel.fromJson(Map<String, dynamic> json) =>
+      OnboardingApplicationModel(
+        id: json['id'] as String? ?? '',
+        applicationType: json['applicationType'] as String? ?? '',
+        applicantName: json['applicantName'] as String? ?? '',
+        city: json['city'] as String? ?? '',
+        status: json['status'] as String? ?? '',
+        companyName: json['companyName'] as String?,
+        rejectionReason: json['rejectionReason'] as String?,
+        documents: (json['documents'] as List<dynamic>? ?? const [])
+            .whereType<Map<String, dynamic>>()
+            .map(ApplicationDocumentModel.fromJson)
+            .toList(growable: false),
+      );
+}

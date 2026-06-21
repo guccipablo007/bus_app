@@ -130,3 +130,33 @@ Flutter analyze passed; 11 Flutter tests passed; 30 API tests passed; API
 build/typecheck passed; APK build passed. The ignored artifact is 185,439,241
 bytes with SHA-256
 `481417420244873900F2E5BE25144C1F09744DA1189B9973F9CC5628B503E869`.
+
+## 2026-06-21 - Phase 12B-B onboarding and admin review
+
+Implemented additive migration `008`, onboarding/admin APIs, Flutter agency and
+driver forms, My Applications, pending confirmation, super-admin review, and
+status/placeholder dashboard improvements.
+
+```powershell
+cd apps/mobile_app
+flutter pub get
+flutter analyze
+flutter test
+cd ../..
+cmd /c pnpm --filter api test
+cmd /c pnpm --filter api test:e2e
+cmd /c pnpm --filter api build
+cmd /c pnpm --filter api typecheck
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\validate_migration_files.ps1
+cd apps/mobile_app
+flutter build apk --debug --dart-define=API_BASE_URL=https://cameroon-bus-api-staging.onrender.com/api/v1
+```
+
+Results: Flutter analyze passed; 16 Flutter tests passed; 30 API unit and 11
+e2e tests passed; build/typecheck passed; migration validation found 8 ordered
+SQL files and 28 required tables. APK size is 185,439,241 bytes; SHA-256 is
+`0B2B6C31E67006ADC9F06ECF305095E4BCED3605C0E1ADCE0E393F9B4FD4694F`.
+
+No migration was pushed and no service was deployed. Documents remain metadata-only.
+The migration runner was extended with a single-file path option so rollout can
+apply `008` without rerunning the seven already-applied migrations.

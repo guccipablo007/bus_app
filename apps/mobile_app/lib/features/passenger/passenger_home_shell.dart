@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/api/api_client.dart';
 import '../../core/api/api_exception.dart';
+import '../onboarding/onboarding_screens.dart';
 import '../../navigation/role_router_screen.dart';
 import '../../shared/models/api_models.dart';
 import '../../shared/models/user_role.dart';
@@ -668,6 +669,46 @@ class _PassengerHomeShellState extends State<PassengerHomeShell> {
                     .toList(),
               ),
               const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.business_outlined),
+                title: const Text('Apply as bus company'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => AgencyApplicationScreen(
+                      session: widget.session,
+                      apiClient: widget.apiClient,
+                    ),
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.local_taxi_outlined),
+                title: const Text('Apply as taxi driver'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => DriverApplicationScreen(
+                      session: widget.session,
+                      apiClient: widget.apiClient,
+                    ),
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.fact_check_outlined),
+                title: const Text('My applications'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => MyApplicationsScreen(
+                      session: widget.session,
+                      apiClient: widget.apiClient,
+                    ),
+                  ),
+                ),
+              ),
+              const Divider(),
               OutlinedButton.icon(
                 onPressed: () =>
                     widget.onLogout ??

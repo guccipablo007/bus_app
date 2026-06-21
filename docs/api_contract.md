@@ -177,3 +177,18 @@ logging credentials or tokens.
 The staging APK receives its API base URL through `--dart-define=API_BASE_URL`.
 The emulator default remains `http://10.0.2.2:3000/api/v1`; the built staging
 artifact uses `https://cameroon-bus-api-staging.onrender.com/api/v1`.
+
+## Onboarding applications
+
+| Method | Path | Access |
+|---|---|---|
+| `POST` | `/onboarding/agency-applications` | Passenger |
+| `POST` | `/onboarding/driver-applications` | Passenger |
+| `GET` | `/onboarding/my-applications` | Passenger |
+| `GET` | `/admin/applications` | Super admin |
+| `PATCH` | `/admin/applications/:id/review` | Super admin |
+
+Review accepts `{"decision":"approved"}` or a rejection with a required
+`rejectionReason`. Approval is status-only and does not grant roles or create
+agency/driver records. Documents are filename/type metadata with
+`storageProvider=staging_placeholder`; no file bytes are uploaded.

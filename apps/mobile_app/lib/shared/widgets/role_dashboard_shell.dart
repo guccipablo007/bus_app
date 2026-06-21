@@ -13,6 +13,8 @@ class RoleDashboardShell extends StatelessWidget {
     required this.session,
     required this.apiClient,
     required this.actions,
+    this.statusText,
+    this.note,
   });
 
   final String title;
@@ -20,6 +22,8 @@ class RoleDashboardShell extends StatelessWidget {
   final UserSession session;
   final ApiClient apiClient;
   final List<(IconData, String)> actions;
+  final String? statusText;
+  final String? note;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +60,16 @@ class RoleDashboardShell extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
+              if (statusText != null) ...[
+                GlassPanel(
+                  child: ListTile(
+                    leading: const Icon(Icons.verified_user_outlined),
+                    title: const Text('Account status'),
+                    subtitle: Text(statusText!),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
               Text('Workspace', style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 8),
               ...actions.map(
@@ -73,6 +87,10 @@ class RoleDashboardShell extends StatelessWidget {
                   ),
                 ),
               ),
+              if (note != null) ...[
+                const SizedBox(height: 8),
+                Text(note!, textAlign: TextAlign.center),
+              ],
             ],
           ),
         ),

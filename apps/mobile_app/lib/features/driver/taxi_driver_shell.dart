@@ -19,9 +19,12 @@ class TaxiDriverShell extends StatelessWidget {
     icon: Icons.local_taxi_outlined,
     session: session,
     apiClient: apiClient,
+    statusText: 'Approved staging taxi driver account',
+    note: 'Live dispatch and location tracking are coming next.',
     actions: const [
       (Icons.assignment_outlined, 'Assigned rides'),
-      (Icons.navigation_outlined, 'Active ride'),
+      (Icons.navigation_outlined, 'Pickup and drop-off flow'),
+      (Icons.sync_alt_outlined, 'Ride status'),
       (Icons.history, 'Ride history'),
     ],
   );

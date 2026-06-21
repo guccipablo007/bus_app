@@ -140,6 +140,67 @@ class ApiClient {
     ),
   );
 
+  Future<OnboardingApplicationModel> createAgencyApplication({
+    required String accessToken,
+    required Map<String, dynamic> application,
+  }) async => OnboardingApplicationModel.fromJson(
+    _asMap(
+      await _request(
+        'POST',
+        '/onboarding/agency-applications',
+        token: accessToken,
+        body: application,
+      ),
+    ),
+  );
+
+  Future<OnboardingApplicationModel> createDriverApplication({
+    required String accessToken,
+    required Map<String, dynamic> application,
+  }) async => OnboardingApplicationModel.fromJson(
+    _asMap(
+      await _request(
+        'POST',
+        '/onboarding/driver-applications',
+        token: accessToken,
+        body: application,
+      ),
+    ),
+  );
+
+  Future<List<OnboardingApplicationModel>> myApplications({
+    required String accessToken,
+  }) async => _asList(
+    await _request('GET', '/onboarding/my-applications', token: accessToken),
+  ).map(OnboardingApplicationModel.fromJson).toList(growable: false);
+
+  Future<List<OnboardingApplicationModel>> adminApplications({
+    required String accessToken,
+  }) async => _asList(
+    await _request('GET', '/admin/applications', token: accessToken),
+  ).map(OnboardingApplicationModel.fromJson).toList(growable: false);
+
+  Future<OnboardingApplicationModel> reviewApplication({
+    required String accessToken,
+    required String applicationId,
+    required String decision,
+    String? rejectionReason,
+  }) async => OnboardingApplicationModel.fromJson(
+    _asMap(
+      await _request(
+        'PATCH',
+        '/admin/applications/$applicationId/review',
+        token: accessToken,
+        body: {
+          'decision': decision,
+          ...rejectionReason == null
+              ? const <String, dynamic>{}
+              : {'rejectionReason': rejectionReason},
+        },
+      ),
+    ),
+  );
+
   Future<dynamic> _request(
     String method,
     String path, {
@@ -161,6 +222,14 @@ class ApiClient {
         'POST' =>
           await _http
               .post(
+                uri,
+                headers: headers,
+                body: body == null ? null : jsonEncode(body),
+              )
+              .timeout(_timeout),
+        'PATCH' =>
+          await _http
+              .patch(
                 uri,
                 headers: headers,
                 body: body == null ? null : jsonEncode(body),

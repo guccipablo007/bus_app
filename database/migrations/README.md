@@ -18,6 +18,10 @@ The Supabase database search path must make extension functions and types
 available, which is the standard Supabase configuration. Do not relocate an
 existing extension during application migrations.
 
+`008_onboarding_applications.sql` adds agency/driver applications and staging
+document metadata. It is additive and does not create agencies, drivers, or
+roles when an application is approved.
+
 ## Order
 
 Run files in numeric filename order:

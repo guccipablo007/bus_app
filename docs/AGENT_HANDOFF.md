@@ -2,74 +2,53 @@
 
 ## Current phase
 
-Phase 12B-A1 complete: hosted login connectivity regression repaired.
+Phase 12B-B implemented and locally verified. Hosted rollout is pending.
 
-## What was completed
+## Completed
 
-- Confirmed the initial worktree was clean with no partial agent edits.
-- Verified hosted health and database reachability.
-- Verified the backend login body is exactly `identifier` plus `password`.
-- Proved the seeded hosted passenger login returns HTTP 200.
-- Corrected demo helpers to use accounts actually seeded in Supabase.
-- Made hosted Render the safe API default and rebuilt with an explicit dart-define.
-- Added status-specific errors and debug-only transport diagnostics.
-- Added config, payload, error, demo-fill, and session-save regression tests.
+- Added migration `008_onboarding_applications.sql` with agency applications,
+  driver applications, and application document metadata.
+- Added passenger submit/list APIs and super-admin list/review APIs.
+- Approval/rejection is status-only; it does not create agencies/drivers or roles.
+- Added passenger agency/driver forms, My Applications, and pending-review screen.
+- Added live super-admin review queue and clearer agency/driver placeholders.
+- Added backend e2e and Flutter widget coverage.
+- Built the ignored debug staging APK with the hosted API dart-define.
 
-## Root cause
+## Document handling
 
-Commit `1f9f913` rebuilt with plain `flutter build apk --debug`, omitting the
-staging dart-define. `ApiConfig` therefore selected `10.0.2.2` in BlueStacks.
-The rewrite also introduced `+237670000001 / pass123`; `pass123` violates the
-backend eight-character minimum and that phone is not assigned to the seeded user.
-
-## Working hosted login
-
-```json
-{
-  "identifier": "passenger.demo@cameroonbus.test",
-  "password": "Password123!"
-}
-```
-
-The hosted endpoint returned HTTP 200, passenger role, and both tokens. Token
-values were not logged.
-
-## Files changed
-
-- Flutter API config, API client, auth service, login helper, and auth tests
-- Phase status, build, limitation, friend-testing, and device-test docs
+Metadata only. The app records document type and filename with a staging
+placeholder path. It does not upload file bytes. Real uploads require a private
+Supabase Storage bucket, server-side credentials, size/type checks, signed URLs,
+malware policy, retention rules, and manual environment configuration.
 
 ## Verification
 
 ```text
 Flutter analyze: no issues
-Flutter tests: 11 passed
-NestJS tests: 7 suites, 30 passed
-NestJS build/typecheck: passed
-APK build with hosted dart-define: passed
+Flutter tests: 16 passed
+API unit tests: 30 passed
+API e2e tests: 11 passed
+API build/typecheck: passed
+Migration validation: passed, 8 files / 28 tables
 ```
 
 ## APK
 
 ```text
-Path: staging_artifacts/cameroon-bus-staging-debug.apk
-Size: 185,439,241 bytes
-SHA-256: 481417420244873900F2E5BE25144C1F09744DA1189B9973F9CC5628B503E869
+staging_artifacts/cameroon-bus-staging-debug.apk
+185,439,241 bytes
+SHA-256 0B2B6C31E67006ADC9F06ECF305095E4BCED3605C0E1ADCE0E393F9B4FD4694F
 ```
 
-The APK and `staging_artifacts/` remain ignored.
+## Known issue / exact next task
 
-## Known issues
+The code is not live on hosted staging yet. Apply only migration `008` using
+`push_supabase_schema.ps1 -MigrationPath database/migrations/008_onboarding_applications.sql`
+and the existing process-only `DATABASE_URL`, then redeploy the existing Render service.
+Do not test hosted submission/review before both steps complete.
 
-- Render Free cold starts can delay login; client timeout is 120 seconds.
-- SharedPreferences is staging-only token storage; production needs secure storage.
-- Non-passenger dashboards remain placeholders.
+## Secrets needed
 
-## Exact next task
-
-Replace the BlueStacks APK, clear old app data, and repeat the login/session and
-passenger regression checklist in `docs/physical_device_test_plan.md`.
-
-## Secrets still needed
-
-None.
+No new secrets. A real upload phase would require manually configured private
+storage credentials; none were guessed or committed.

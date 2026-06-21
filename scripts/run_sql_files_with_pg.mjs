@@ -1,4 +1,4 @@
-import { readFile, readdir } from 'node:fs/promises';
+import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import pg from 'pg';
@@ -8,16 +8,20 @@ import { normalizePgConnectionString } from './normalize_pg_connection.mjs';
 const { Client } = pg;
 const databaseUrl = process.env.DATABASE_URL;
 const requestedDirectory = process.argv[2] ?? 'database/seeds';
-const sqlDirectory = path.resolve(process.cwd(), requestedDirectory);
+const sqlPath = path.resolve(process.cwd(), requestedDirectory);
 
 if (!databaseUrl) {
   console.error('DATABASE_URL is required in the process environment.');
   process.exit(1);
 }
 
-const fileNames = (await readdir(sqlDirectory))
-  .filter((fileName) => /^\d{3}_.+\.sql$/i.test(fileName))
-  .sort((left, right) => left.localeCompare(right));
+const requestedStat = await stat(sqlPath);
+const sqlDirectory = requestedStat.isDirectory() ? sqlPath : path.dirname(sqlPath);
+const fileNames = requestedStat.isDirectory()
+  ? (await readdir(sqlDirectory))
+      .filter((fileName) => /^\d{3}_.+\.sql$/i.test(fileName))
+      .sort((left, right) => left.localeCompare(right))
+  : [path.basename(sqlPath)].filter((fileName) => /^\d{3}_.+\.sql$/i.test(fileName));
 
 if (fileNames.length === 0) {
   console.error(`No ordered SQL files found in ${requestedDirectory}.`);

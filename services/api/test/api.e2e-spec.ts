@@ -13,6 +13,7 @@ describe('API HTTP contract (e2e)', () => {
   let passengerToken: string;
   let secondPassengerToken: string;
   let driverToken: string;
+  let superAdminToken: string;
 
   const register = (email: string, phone: string) =>
     request(app.getHttpServer())
@@ -36,6 +37,13 @@ describe('API HTTP contract (e2e)', () => {
       {
         sub: 'driver-user', fullName: 'Driver', phone: null,
         email: 'driver@example.com', roles: ['taxi_driver'], driverId: 'driver-1', kind: 'access',
+      },
+      { secret: config.getOrThrow<string>('JWT_ACCESS_SECRET'), expiresIn: '15m' },
+    );
+    superAdminToken = await jwt.signAsync(
+      {
+        sub: 'super-admin-user', fullName: 'Super Admin', phone: null,
+        email: 'admin@example.com', roles: ['super_admin'], kind: 'access',
       },
       { secret: config.getOrThrow<string>('JWT_ACCESS_SECRET'), expiresIn: '15m' },
     );
@@ -167,5 +175,57 @@ describe('API HTTP contract (e2e)', () => {
       .set('Authorization', `Bearer ${secondPassengerToken}`)
       .send({ destinationAreaId: DEMO_IDS.nkwen, destinationLandmark: 'Near pharmacy', pickupTerminalId: 'tampered' })
       .expect(400);
+  });
+
+  it('supports passenger applications and super-admin status-only review', async () => {
+    const agency = await request(app.getHttpServer())
+      .post('/api/v1/onboarding/agency-applications')
+      .set('Authorization', `Bearer ${passengerToken}`)
+      .send({
+        companyName: 'Mountain Express', ownerManagerName: 'Test Owner',
+        phone: '+237670000061', email: 'phase6-one@example.com', city: 'Buea',
+        description: 'A staging agency application for intercity transport.',
+        documents: [{ documentType: 'business_registration', originalFilename: 'registration.pdf' }],
+      })
+      .expect(201);
+    expect(agency.body).toMatchObject({ applicationType: 'agency', status: 'submitted' });
+    expect(agency.body.documents[0]).toMatchObject({
+      storageProvider: 'staging_placeholder', status: 'metadata_only',
+    });
+
+    const driver = await request(app.getHttpServer())
+      .post('/api/v1/onboarding/driver-applications')
+      .set('Authorization', `Bearer ${passengerToken}`)
+      .send({ driverName: 'Test Driver', phone: '+237670000061', city: 'Buea', vehiclePlate: 'SW-123-AA',
+        documents: [{ documentType: 'driver_license', originalFilename: 'license.jpg' }] })
+      .expect(201);
+    expect(driver.body).toMatchObject({ applicationType: 'driver', status: 'submitted' });
+
+    const mine = await request(app.getHttpServer())
+      .get('/api/v1/onboarding/my-applications')
+      .set('Authorization', `Bearer ${passengerToken}`).expect(200);
+    expect(mine.body).toHaveLength(2);
+
+    await request(app.getHttpServer())
+      .patch(`/api/v1/admin/applications/${agency.body.id}/review`)
+      .set('Authorization', `Bearer ${passengerToken}`)
+      .send({ decision: 'approved' }).expect(403);
+
+    const all = await request(app.getHttpServer())
+      .get('/api/v1/admin/applications')
+      .set('Authorization', `Bearer ${superAdminToken}`).expect(200);
+    expect(all.body).toHaveLength(2);
+
+    const approved = await request(app.getHttpServer())
+      .patch(`/api/v1/admin/applications/${agency.body.id}/review`)
+      .set('Authorization', `Bearer ${superAdminToken}`)
+      .send({ decision: 'approved' }).expect(200);
+    expect(approved.body).toMatchObject({ status: 'approved', rejectionReason: null });
+
+    const rejected = await request(app.getHttpServer())
+      .patch(`/api/v1/admin/applications/${driver.body.id}/review`)
+      .set('Authorization', `Bearer ${superAdminToken}`)
+      .send({ decision: 'rejected', rejectionReason: 'License metadata needs correction.' }).expect(200);
+    expect(rejected.body).toMatchObject({ status: 'rejected', rejectionReason: 'License metadata needs correction.' });
   });
 });

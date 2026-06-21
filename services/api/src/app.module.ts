@@ -9,6 +9,7 @@ import { DataModule } from './data/data.module';
 import { DatabaseModule } from './database/database.module';
 import { HealthController } from './health/health.controller';
 import { LocationsModule } from './locations/locations.module';
+import { OnboardingModule } from './onboarding/onboarding.module';
 import { TaxiModule } from './taxi/taxi.module';
 import { TripsModule } from './trips/trips.module';
 
@@ -27,6 +28,7 @@ import { TripsModule } from './trips/trips.module';
     TripsModule,
     BookingsModule,
     TaxiModule,
+    OnboardingModule,
   ],
   controllers: [HealthController],
 })

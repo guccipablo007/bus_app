@@ -11,6 +11,7 @@ $requiredFiles = @(
   '005_bookings_payments_tickets.sql',
   '006_residential_areas_taxi_zones.sql',
   '007_audit_indexes_and_security.sql',
+  '008_onboarding_applications.sql',
   'README.md'
 )
 
@@ -39,7 +40,10 @@ $requiredTables = @(
   'taxi_vehicles',
   'taxi_drivers',
   'taxi_rides',
-  'audit_logs'
+  'audit_logs',
+  'agency_applications',
+  'driver_applications',
+  'application_documents'
 )
 
 $requiredRoles = @(

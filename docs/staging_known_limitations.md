@@ -1,15 +1,12 @@
 # Staging Known Limitations
 
-- Render Free can cold-start after idle. Login allows up to 120 seconds.
-- All testers share one Supabase staging dataset and seat inventory.
-- The debug APK is about 176.8 MiB and is debug-signed, not Play-ready.
-- Sessions persist in SharedPreferences for QA; production requires secure storage.
-- Tokens are not yet refreshed or revoked through a complete lifecycle.
-- Demo payment is not real payment processing.
-- Agency, dispatcher, driver, and super-admin operations remain placeholders.
-- QR rendering, notifications, offline mode, French localization, and a formal
-  accessibility audit remain pending.
-- Taxi fares and coordinates are staging approximations.
-- No release keystore exists.
-
-The APK calls only the hosted NestJS API. No Supabase credential is in Flutter.
+- Onboarding source exists, but hosted migration/deployment is pending.
+- Document handling is metadata-only; no file is uploaded or securely stored.
+- Approval changes application status only. It grants no role and creates no
+  agency, staff, taxi driver, or vehicle record.
+- Render Free can cold-start after idle.
+- Sessions use SharedPreferences for QA, not production secure storage.
+- Agency, dispatcher, driver, and admin operations beyond review are placeholders.
+- Demo payment, approximate coordinates/fares, shared data, and debug APK signing
+  remain staging-only.
+- Production uploads need private object storage and a security/retention design.

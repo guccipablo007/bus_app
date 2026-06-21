@@ -1,5 +1,7 @@
 [CmdletBinding()]
-param()
+param(
+    [string]$MigrationPath = 'database/migrations'
+)
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
@@ -24,8 +26,16 @@ if ($databaseUri.Host -notlike '*.supabase.co' -and $databaseUri.Host -notlike '
 
 Push-Location $root
 try {
-    Write-Host 'Applying ordered migrations to Supabase staging.'
-    & node '.\scripts\run_sql_files_with_pg.mjs' 'database/migrations'
+    $resolvedMigrationPath = [IO.Path]::GetFullPath((Join-Path $root $MigrationPath))
+    $migrationRoot = [IO.Path]::GetFullPath((Join-Path $root 'database\migrations'))
+    if (-not $resolvedMigrationPath.StartsWith($migrationRoot, [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'MigrationPath must stay inside database/migrations.'
+    }
+    if (-not (Test-Path -LiteralPath $resolvedMigrationPath)) {
+        throw "MigrationPath does not exist: $MigrationPath"
+    }
+    Write-Host "Applying Supabase staging migration path: $MigrationPath"
+    & node '.\scripts\run_sql_files_with_pg.mjs' $MigrationPath
     if ($LASTEXITCODE -ne 0) {
         throw 'Supabase migration runner failed.'
     }

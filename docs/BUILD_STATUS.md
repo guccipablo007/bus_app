@@ -1,29 +1,14 @@
 # Build Status
 
-## Phase 12B-A1
-
-Hosted login connectivity regression fixed and debug staging APK rebuilt.
+Phase 12B-B source and local tests pass.
 
 ```text
-Hosted health: ok; database reachable
-Hosted passenger login: HTTP 200
-Flutter analyze: no issues
-Flutter tests: 11 passed
-API tests: 7 suites, 30 passed
-API build/typecheck: passed
-APK size: 185,439,241 bytes
-APK SHA-256: 481417420244873900F2E5BE25144C1F09744DA1189B9973F9CC5628B503E869
+Flutter: analyze passed; 16 tests passed
+NestJS: 30 unit + 11 e2e passed; build/typecheck passed
+Migrations: validation passed (8 SQL files, 28 required tables)
+APK: 185,439,241 bytes
+SHA-256: 0B2B6C31E67006ADC9F06ECF305095E4BCED3605C0E1ADCE0E393F9B4FD4694F
 ```
 
-Build command:
-
-```powershell
-flutter build apk --debug --dart-define=API_BASE_URL=https://cameroon-bus-api-staging.onrender.com/api/v1
-```
-
-The app default is also hosted staging, preventing an accidental plain debug
-build from silently targeting BlueStacks host loopback. Local API testing must
-pass its URL explicitly with `--dart-define`.
-
-One app remains at `apps/mobile_app`. No backend, database schema, deployment,
-keystore, or secret changed.
+Hosted state: existing passenger APIs remain live, but onboarding migration/API
+deployment is pending. The new APK must be retested after that rollout.
