@@ -93,7 +93,7 @@ export class InMemoryDomainRepository implements LocationRepository, TripReposit
     departure.setUTCDate(departure.getUTCDate() + 1);
     departure.setUTCHours(7, 0, 0, 0);
     const arrival = new Date(departure.getTime() + durationHours * 60 * 60 * 1000);
-    const seats = ['1A', '1B', '2A', '2B'];
+    const seats = ['S01', 'S02', 'S03', 'S04'];
     return {
       id,
       originCityId: DEMO_IDS.buea,

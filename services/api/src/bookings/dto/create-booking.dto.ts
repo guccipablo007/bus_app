@@ -9,6 +9,6 @@ export class CreateBookingDto {
   tripId: string;
   @IsString()
   @Transform(({ value }) => typeof value === 'string' ? value.trim().toUpperCase() : value)
-  @Matches(/^[0-9]{1,3}[A-Z]$/)
+  @Matches(/^S[0-9]{2,3}$/)
   seatNumber: string;
 }

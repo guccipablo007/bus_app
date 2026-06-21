@@ -70,7 +70,7 @@ describe('API HTTP contract (e2e)', () => {
   });
 
   it('rejects unauthenticated and wrong-role booking requests', async () => {
-    const body = { tripId: DEMO_IDS.tripBueaBamenda, seatNumber: '1A' };
+    const body = { tripId: DEMO_IDS.tripBueaBamenda, seatNumber: 'S01' };
     await request(app.getHttpServer()).post('/api/v1/bookings').send(body).expect(401);
     await request(app.getHttpServer()).post('/api/v1/bookings').set('Authorization', `Bearer ${driverToken}`).send(body).expect(403);
   });
@@ -79,7 +79,7 @@ describe('API HTTP contract (e2e)', () => {
     const response = await request(app.getHttpServer())
       .post('/api/v1/bookings')
       .set('Authorization', `Bearer ${passengerToken}`)
-      .send({ tripId: DEMO_IDS.tripBueaBamenda, seatNumber: '1A' })
+      .send({ tripId: DEMO_IDS.tripBueaBamenda, seatNumber: 'S01' })
       .expect(201);
     expect(response.body.status).toBe('pending_payment');
     await request(app.getHttpServer())
@@ -93,7 +93,7 @@ describe('API HTTP contract (e2e)', () => {
     const book = (token: string) => request(app.getHttpServer())
       .post('/api/v1/bookings')
       .set('Authorization', `Bearer ${token}`)
-      .send({ tripId: DEMO_IDS.tripBueaBamenda, seatNumber: '1B' });
+      .send({ tripId: DEMO_IDS.tripBueaBamenda, seatNumber: 'S02' });
     const responses = await Promise.all([book(passengerToken), book(secondPassengerToken)]);
     expect(responses.map((response) => response.status).sort()).toEqual([201, 409]);
     const conflict = responses.find((response) => response.status === 409);
@@ -105,7 +105,7 @@ describe('API HTTP contract (e2e)', () => {
     const booking = await request(app.getHttpServer())
       .post('/api/v1/bookings')
       .set('Authorization', `Bearer ${passengerToken}`)
-      .send({ tripId: DEMO_IDS.tripBueaBamenda, seatNumber: '2A' })
+      .send({ tripId: DEMO_IDS.tripBueaBamenda, seatNumber: 'S03' })
       .expect(201);
     const first = await request(app.getHttpServer())
       .post(`/api/v1/bookings/${booking.body.id}/confirm-demo-payment`)
@@ -121,7 +121,7 @@ describe('API HTTP contract (e2e)', () => {
     const booking = await request(app.getHttpServer())
       .post('/api/v1/bookings')
       .set('Authorization', `Bearer ${secondPassengerToken}`)
-      .send({ tripId: DEMO_IDS.tripBueaDouala, seatNumber: '2B' }).expect(201);
+      .send({ tripId: DEMO_IDS.tripBueaDouala, seatNumber: 'S04' }).expect(201);
     await request(app.getHttpServer()).get(`/api/v1/bookings/${booking.body.id}/eligible-taxi-areas`).expect(401);
     const unpaid = await request(app.getHttpServer())
       .get(`/api/v1/bookings/${booking.body.id}/eligible-taxi-areas`)
@@ -142,7 +142,7 @@ describe('API HTTP contract (e2e)', () => {
     const booking = await request(app.getHttpServer())
       .post('/api/v1/bookings')
       .set('Authorization', `Bearer ${secondPassengerToken}`)
-      .send({ tripId: DEMO_IDS.tripBueaBamenda, seatNumber: '2B' }).expect(201);
+      .send({ tripId: DEMO_IDS.tripBueaBamenda, seatNumber: 'S04' }).expect(201);
     await request(app.getHttpServer())
       .post(`/api/v1/bookings/${booking.body.id}/confirm-demo-payment`)
       .set('Authorization', `Bearer ${secondPassengerToken}`).expect(201);
