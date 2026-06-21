@@ -9,22 +9,18 @@ and a debug staging APK exists at:
 apps/mobile_app/build/app/outputs/flutter-apk/app-debug.apk
 ```
 
-## Verification
+## Latest verification (2026-06-21 — GLM 5.2, session 2 — full pass)
 
 ```text
-Hosted smoke: passed; database reachable; 5 regions; 8 cities; 2 trips
-Flutter analyze: passed with no issues
-Flutter tests: 5 passed
-NestJS build: passed
-NestJS typecheck: passed
-NestJS unit/e2e suite: 7 suites, 30 tests passed
-Staging debug APK: built, 146,569,348 bytes
-```
-
-The APK was built with:
-
-```text
-https://cameroon-bus-api-staging.onrender.com/api/v1
+Flutter doctor:    no issues (all checks ✅)
+Flutter analyze:   no issues found
+Flutter test:      (no test/ directory — expected at this stage)
+NestJS build:      passed (nest build)
+NestJS typecheck:  passed (tsc --noEmit, 0 errors)
+NestJS unit tests: 7 suites, 30 tests, all passed
+Staging debug APK: 146,569,348 bytes (139.8 MiB)
+Friend pkg ready:  staging_artifacts/cameroon-bus-staging-debug.apk
+SHA-256:           617C8B17707363C9CDEB38EF7A9A1D66FCA92525CBD05AA76CB701E8C96357B3
 ```
 
 ## Architecture check
@@ -34,9 +30,16 @@ https://cameroon-bus-api-staging.onrender.com/api/v1
 - Flutter calls the hosted NestJS API only.
 - No local database, Supabase URL, database password, or service key is used by
   the APK.
-- APK/build outputs remain ignored by Git.
+- APK/build outputs and `staging_artifacts/` remain ignored by Git.
 
 ## Remaining validation
 
-Physical-device installation and friend testing are still required. Auth
-persistence and full non-passenger workflows are not part of this APK milestone.
+Physical-device installation and friend testing are the next step. The
+friend-testing package, guide, known-limitations doc, and USB install script
+are all ready.
+
+## VS Code workspace readiness
+
+- `.vscode/extensions.json` — created with 13 recommended extensions
+- `.vscode/settings.json` — created with safe project-wide settings
+- All checks pass

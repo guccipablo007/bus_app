@@ -33,3 +33,9 @@ Thumbs.db
 # Logs
 *.log
 pnpm-debug.log*
+
+# Staging artifacts (APK copies, checksum files)
+staging_artifacts/
+
+# APK files anywhere in the tree
+*.apk
